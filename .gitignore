@@ -19,10 +19,11 @@ fastf1_cache/
 reports/
 *.mp4
 *.mov
+.vercel/
+site/.vercel/
 
 # Notebooks
 .ipynb_checkpoints/
 
 # OS
 .DS_Store
-

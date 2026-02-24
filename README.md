@@ -96,6 +96,27 @@ This now serves a multi-page interactive website with:
 - Championship Lab (what-if sliders)
 - Data Integrity (manifest + checksum copy actions)
 
+Export static website for Vercel:
+
+```bash
+python scripts/export_static_site.py --out-dir site
+```
+
+Then deploy:
+
+```bash
+cd site
+vercel --prod
+```
+
+GitHub auto-deploy is preconfigured via:
+- `.github/workflows/vercel-deploy.yml`
+
+Required GitHub repository secrets:
+- `VERCEL_TOKEN`
+- `VERCEL_ORG_ID`
+- `VERCEL_PROJECT_ID`
+
 ## 4. Outputs
 
 Pipeline writes to `reports/`:

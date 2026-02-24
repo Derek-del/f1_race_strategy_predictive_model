@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: install test run run-realdata-lock dashboard demo lint
+.PHONY: install test run run-realdata-lock dashboard export-site demo lint
 
 install:
 	$(PYTHON) -m pip install -e '.[dev]'
@@ -16,6 +16,9 @@ run-realdata-lock:
 
 dashboard:
 	$(PYTHON) scripts/run_locked_dashboard.py --port 8765
+
+export-site:
+	$(PYTHON) scripts/export_static_site.py --out-dir site
 
 demo:
 	$(PYTHON) scripts/run_demo.py

@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.dylib
+
+# Virtual env
+.venv/
+venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Local data/cache
+cache/
+fastf1_cache/
+reports/
+*.mp4
+*.mov
+
+# Notebooks
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+

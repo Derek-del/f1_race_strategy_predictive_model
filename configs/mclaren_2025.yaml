@@ -1,0 +1,35 @@
+project_name: "F1 Strategy Lab - McLaren 2025"
+team: "MCLAREN"
+target_driver: "NOR"
+training_years: [2021, 2022, 2023, 2024]
+target_year: 2025
+
+paths:
+  fastf1_cache: "./fastf1_cache"
+  weather_cache: "./cache/weather"
+  reports_dir: "./reports"
+
+weather:
+  provider: "open-meteo"
+
+model:
+  test_size: 0.2
+  random_state: 42
+  n_estimators: 300
+  learning_rate: 0.05
+  max_depth: 4
+
+simulation:
+  n_simulations: 3000
+  pit_loss_seconds: 21.5
+  safety_car_probability: 0.18
+  weather_uncertainty_seconds: 0.35
+  traffic_uncertainty_seconds: 0.4
+
+cv:
+  frame_stride: 10
+  min_contour_area: 220
+
+strategy:
+  default_total_laps: 58
+  compounds: ["SOFT", "MEDIUM", "HARD"]

@@ -26,26 +26,17 @@ vercel --prod
 
 If your Vercel project is already linked, `vercel --prod` is enough.
 
-## 2b. Enable GitHub auto-deploy (recommended)
+## 2b. Connect GitHub for auto deploy
 
-This repo includes:
-- `.github/workflows/vercel-deploy.yml`
+In Vercel:
+1. Add New Project
+2. Import your GitHub repo
+3. Set `Root Directory` to `site`
+4. Keep framework as `Other`
+5. Build command can be empty (static site already exported)
+6. Deploy
 
-On push to `main`, GitHub Actions will:
-1. export static site to `site/`
-2. inject Vercel project metadata
-3. deploy to Vercel production
-
-Add these GitHub repository secrets:
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
-
-How to get them:
-- `VERCEL_TOKEN`: Vercel dashboard -> Settings -> Tokens
-- `VERCEL_ORG_ID` + `VERCEL_PROJECT_ID`:
-  - run `vercel link` once locally in repo root
-  - read IDs from `.vercel/project.json`
+After that, every push to `main` triggers a new Vercel deployment via native Git integration.
 
 ## 3. Route behavior
 
@@ -67,8 +58,7 @@ python scripts/export_static_site.py --out-dir site
 cd site
 vercel --prod
 ```
-
-If using GitHub auto-deploy, just commit and push changes to `main`.
+If using Vercel Git integration, commit the refreshed `site/` folder and push to `main`.
 
 ## 5. Optional: deploy specific snapshot
 

@@ -109,13 +109,7 @@ cd site
 vercel --prod
 ```
 
-GitHub auto-deploy is preconfigured via:
-- `.github/workflows/vercel-deploy.yml`
-
-Required GitHub repository secrets:
-- `VERCEL_TOKEN`
-- `VERCEL_ORG_ID`
-- `VERCEL_PROJECT_ID`
+For GitHub-based auto deploy, import this repository directly in Vercel and set Root Directory to `site`.
 
 ## 4. Outputs
 

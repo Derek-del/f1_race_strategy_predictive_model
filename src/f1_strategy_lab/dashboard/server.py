@@ -1517,7 +1517,7 @@ def _dashboard_html() -> str:
         <div>
           <div class="hero-rail">
             <p class="brand">dnf</p>
-            <p class="brand-sub">don't f**k up</p>
+            <p class="brand-sub">do not f**kup</p>
           </div>
           <h1 class="title">A Race strategy prediction model</h1>
           <p class="hero-note">Strategy predicition model for McLaren F1 for the 2025 Formula 1 season</p>

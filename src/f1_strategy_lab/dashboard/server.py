@@ -195,7 +195,7 @@ def _dashboard_html() -> str:
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>F1 Strategy 2025</title>
+  <title>dnf - A Race strategy prediction model</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -427,7 +427,7 @@ def _dashboard_html() -> str:
       display: grid;
       gap: 4px;
       margin-bottom: 32px;
-      transform: translateY(-16px);
+      transform: translateY(-24px);
     }
 
     .brand {
@@ -610,13 +610,15 @@ def _dashboard_html() -> str:
 
     .reveal-on-scroll {
       opacity: 0;
-      transform: translateY(28px);
-      transition: transform 780ms var(--ease), opacity 780ms var(--ease);
+      transform: translateY(30px) scale(0.99);
+      filter: blur(3px);
+      transition: transform 820ms var(--ease), opacity 820ms var(--ease), filter 820ms var(--ease);
     }
 
     .reveal-on-scroll.in-view {
       opacity: 1;
       transform: translateY(0);
+      filter: blur(0);
     }
 
     .landing {
@@ -1520,7 +1522,7 @@ def _dashboard_html() -> str:
             <p class="brand-sub">do not f**kup</p>
           </div>
           <h1 class="title">A Race strategy prediction model</h1>
-          <p class="hero-note">Strategy predicition model for McLaren F1 for the 2025 Formula 1 season</p>
+          <p class="hero-note">Strategy prediction model for McLaren F1 for the 2025 Formula 1 season</p>
           <p class="sub" id="metaLine">Loading race strategies...</p>
         </div>
       </div>
@@ -1528,7 +1530,7 @@ def _dashboard_html() -> str:
 
     <main>
       <section class="page active" id="page-overview">
-        <section class="landing">
+        <section class="landing reveal-on-scroll" id="introBlock">
           <h2>Build race-day decisions from practice, qualifying and contingency signals.</h2>
           <p>
             The model uses the data from pre-season testing, practice session, qualifying session, weather forecast
@@ -1558,7 +1560,7 @@ def _dashboard_html() -> str:
           </div>
         </section>
 
-        <section class="grid-2">
+        <section class="grid-2 reveal-on-scroll" id="validationBlock">
           <div class="panel">
             <h3>Round Validation</h3>
             <p id="roundStatus"></p>
@@ -1627,12 +1629,12 @@ def _dashboard_html() -> str:
 
       <section class="page" id="page-strategy">
         <section class="strategy-clean">
-          <section class="strategy-head">
+          <section class="strategy-head reveal-on-scroll" id="strategyHead">
             <h2>Clean strategy dashboard</h2>
             <p>Filter events, compare primary plans and open each row for full fallback strategy details.</p>
           </section>
 
-          <section class="controls">
+          <section class="controls reveal-on-scroll" id="strategyControls">
             <div class="row">
               <div class="field">
                 <label for="searchInput">Search</label>
@@ -1657,7 +1659,7 @@ def _dashboard_html() -> str:
             <p class="hint" id="filterState"></p>
           </section>
 
-          <section class="table-wrap" id="strategyTableWrap">
+          <section class="table-wrap reveal-on-scroll" id="strategyTableWrap">
             <div class="table-header">
               <strong>Race Strategy Table</strong>
             </div>

@@ -103,8 +103,8 @@ def _top_rounds(rows: list[dict[str, Any]], limit: int = 5) -> list[dict[str, An
     ordered = sorted(
         rows,
         key=lambda r: (
-            float(r.get("strategy_score") or 0.0),
             float(r.get("win_probability") or 0.0),
+            -float(r.get("expected_race_time") or 0.0),
         ),
         reverse=True,
     )
@@ -198,7 +198,7 @@ def _dashboard_html() -> str:
   <title>F1 Strategy 2025</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg: #040404;
@@ -219,6 +219,7 @@ def _dashboard_html() -> str:
       --radius-sm: 12px;
       --shadow: 0 22px 44px rgba(0, 0, 0, 0.4);
       --ease: cubic-bezier(.22,.8,.2,1);
+      --mono: "IBM Plex Mono", Menlo, monospace;
     }
 
     * { box-sizing: border-box; }
@@ -254,16 +255,91 @@ def _dashboard_html() -> str:
       -webkit-mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
     }
 
+    .loading-screen {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background:
+        radial-gradient(90% 90% at 50% -10%, rgba(255,49,71,0.2) 0%, rgba(255,49,71,0) 55%),
+        linear-gradient(180deg, #050505 0%, #090909 100%);
+      display: grid;
+      place-items: center;
+      transition: opacity 520ms var(--ease), visibility 520ms var(--ease);
+    }
+
+    .loading-screen.hide {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+
+    .loading-scene {
+      width: min(800px, 92vw);
+      display: grid;
+      gap: 12px;
+      justify-items: center;
+    }
+
+    .loading-track {
+      width: 100%;
+      height: 86px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 999px;
+      background: rgba(12,12,12,0.92);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .loading-track::before {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      top: 50%;
+      height: 2px;
+      transform: translateY(-50%);
+      background: repeating-linear-gradient(90deg, rgba(255,255,255,0.22) 0 30px, transparent 30px 54px);
+      animation: roadMove 1300ms linear infinite;
+    }
+
+    .loading-car {
+      position: absolute;
+      left: -180px;
+      top: 14px;
+      width: 180px;
+      height: 58px;
+      animation: driveOff 1800ms var(--ease) forwards;
+      filter: drop-shadow(0 0 14px rgba(255,49,71,0.35));
+    }
+
+    .loading-text {
+      margin: 0;
+      font-size: 12px;
+      color: #bababa;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
     .car-bg {
       position: fixed;
-      right: -220px;
-      top: 56px;
-      width: min(1000px, 88vw);
-      opacity: 0.2;
+      right: -180px;
+      top: 64px;
+      width: min(1120px, 92vw);
+      opacity: 0.18;
       z-index: 0;
       pointer-events: none;
       filter: drop-shadow(0 0 22px rgba(255, 49, 71, 0.35));
       animation: drift 16s ease-in-out infinite;
+      transition: opacity 360ms var(--ease), transform 360ms var(--ease), right 360ms var(--ease), width 360ms var(--ease), top 360ms var(--ease);
+    }
+
+    body.route-overview .car-bg {
+      right: -28px;
+      top: 84px;
+      width: min(1320px, 100vw);
+      opacity: 0.5;
+      transform: scale(1.04);
+      filter: drop-shadow(0 0 34px rgba(255, 49, 71, 0.5));
     }
 
     .car-bg svg {
@@ -279,6 +355,11 @@ def _dashboard_html() -> str:
       z-index: 1;
       display: grid;
       gap: 16px;
+    }
+
+    main {
+      display: grid;
+      gap: 14px;
     }
 
     .hero {
@@ -301,6 +382,18 @@ def _dashboard_html() -> str:
       pointer-events: none;
     }
 
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
+        linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      opacity: 0.2;
+      pointer-events: none;
+    }
+
     .hero-inner {
       display: grid;
       grid-template-columns: 1.2fr auto;
@@ -309,27 +402,45 @@ def _dashboard_html() -> str:
       align-items: start;
     }
 
-    .eyebrow {
-      margin: 0 0 10px 0;
-      font-size: 11px;
+    .hero-rail {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .brand {
+      margin: 0;
+      font-size: 15px;
       letter-spacing: 0.16em;
+      text-transform: lowercase;
+      color: #f2f2f2;
+      font-weight: 600;
+      font-family: var(--mono);
+    }
+
+    .hero-note {
+      margin: 0;
+      font-size: 11px;
+      color: #d0a6ac;
+      max-width: 360px;
+      text-align: right;
+      letter-spacing: 0.08em;
+      line-height: 1.4;
       text-transform: uppercase;
-      color: #e6b9bf;
+      font-family: var(--mono);
     }
 
     .title {
       margin: 0 0 8px 0;
-      font-size: clamp(30px, 4.2vw, 52px);
+      font-size: clamp(34px, 5vw, 62px);
       line-height: 1.02;
       font-weight: 700;
       max-width: 840px;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
       text-wrap: balance;
-    }
-
-    .title span {
-      color: #ff6a7b;
-      text-shadow: 0 0 16px rgba(255, 49, 71, 0.3);
+      text-transform: capitalize;
     }
 
     .sub {
@@ -353,6 +464,7 @@ def _dashboard_html() -> str:
       color: #d3d3d3;
       padding: 4px 11px;
       font-size: 11px;
+      font-family: var(--mono);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -376,6 +488,9 @@ def _dashboard_html() -> str:
       transition: transform 180ms var(--ease), border-color 180ms var(--ease), background-color 180ms var(--ease);
       position: relative;
       overflow: hidden;
+      font-family: var(--mono);
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
     }
 
     .btn:hover {
@@ -413,6 +528,26 @@ def _dashboard_html() -> str:
       flex-wrap: wrap;
     }
 
+    .hero-marquee {
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      background: rgba(8, 8, 8, 0.82);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    .hero-marquee-track {
+      display: inline-block;
+      padding: 8px 0;
+      min-width: 200%;
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 11px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-family: var(--mono);
+      animation: marquee 22s linear infinite;
+    }
+
     .tabs {
       display: flex;
       gap: 8px;
@@ -436,6 +571,19 @@ def _dashboard_html() -> str:
       overflow: hidden;
     }
 
+    .tab::after {
+      content: "";
+      position: absolute;
+      left: 12px;
+      right: 12px;
+      bottom: 4px;
+      height: 1px;
+      background: rgba(255,49,71,0.75);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 240ms var(--ease);
+    }
+
     .tab:hover {
       color: #f2f2f2;
       border-color: rgba(255, 255, 255, 0.18);
@@ -447,10 +595,16 @@ def _dashboard_html() -> str:
       color: #fff2f4;
     }
 
+    .tab.active::after {
+      transform: scaleX(1);
+    }
+
     .route-hint {
       margin: 0;
       font-size: 12px;
       color: var(--muted);
+      font-family: var(--mono);
+      letter-spacing: 0.03em;
     }
 
     .page {
@@ -464,6 +618,17 @@ def _dashboard_html() -> str:
       animation: rise 320ms var(--ease) forwards;
     }
 
+    .reveal-on-scroll {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: transform 620ms var(--ease), opacity 620ms var(--ease);
+    }
+
+    .reveal-on-scroll.in-view {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
     .landing {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
@@ -472,6 +637,8 @@ def _dashboard_html() -> str:
       margin-bottom: 14px;
       position: relative;
       overflow: hidden;
+      transform-origin: center;
+      animation: floatSoft 7s ease-in-out infinite;
     }
 
     .landing::after {
@@ -489,7 +656,7 @@ def _dashboard_html() -> str:
 
     .landing h2 {
       margin: 0 0 10px 0;
-      font-size: clamp(26px, 4vw, 40px);
+      font-size: clamp(28px, 4.6vw, 50px);
       letter-spacing: -0.02em;
       max-width: 760px;
       text-wrap: balance;
@@ -501,6 +668,81 @@ def _dashboard_html() -> str:
       color: #b9b9b9;
       line-height: 1.6;
       font-size: 14px;
+    }
+
+    .model-story {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(150deg, rgba(13,13,13,0.95) 0%, rgba(8,8,8,0.92) 100%);
+      padding: 24px;
+      margin-top: 14px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .model-story::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, rgba(255,49,71,0.06), transparent 30%, transparent 70%, rgba(255,49,71,0.06));
+      pointer-events: none;
+    }
+
+    .model-story h3 {
+      margin: 0 0 10px 0;
+      font-size: clamp(22px, 3.2vw, 32px);
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      max-width: 780px;
+    }
+
+    .model-story p {
+      margin: 0 0 14px 0;
+      max-width: 860px;
+      color: #bcbcbc;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .story-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .story-card {
+      border: 1px solid #212121;
+      border-radius: var(--radius-sm);
+      background: rgba(13,13,13,0.9);
+      padding: 12px;
+      min-height: 110px;
+      transition: transform 260ms var(--ease), border-color 260ms var(--ease), background-color 260ms var(--ease);
+      animation: rise 600ms var(--delay, 0ms) var(--ease) both;
+    }
+
+    .story-card:hover {
+      transform: translateY(-3px);
+      border-color: rgba(255, 49, 71, 0.34);
+      background: rgba(20, 12, 13, 0.92);
+    }
+
+    .story-card:nth-child(1) { --delay: 140ms; }
+    .story-card:nth-child(2) { --delay: 220ms; }
+    .story-card:nth-child(3) { --delay: 300ms; }
+
+    .story-card h4 {
+      margin: 0 0 7px 0;
+      font-size: 12px;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: #f1b8bf;
+    }
+
+    .story-card p {
+      margin: 0;
+      font-size: 13px;
+      color: #d0d0d0;
+      line-height: 1.45;
     }
 
     .cards {
@@ -517,9 +759,16 @@ def _dashboard_html() -> str:
       padding: 12px;
       opacity: 0;
       transform: translateY(8px);
+      transition: border-color 220ms var(--ease), transform 220ms var(--ease), box-shadow 220ms var(--ease);
     }
 
     .card.reveal { animation: rise 320ms var(--delay, 0ms) var(--ease) forwards; }
+
+    .card:hover {
+      border-color: rgba(255, 49, 71, 0.3);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
+    }
 
     .label { margin: 0 0 6px 0; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
     .value { margin: 0; font-size: 21px; font-weight: 600; }
@@ -535,6 +784,25 @@ def _dashboard_html() -> str:
       border-radius: var(--radius-md);
       background: rgba(10, 10, 10, 0.9);
       padding: 14px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 220ms var(--ease), transform 220ms var(--ease);
+      animation: panelIn 520ms var(--ease) both;
+    }
+
+    .panel::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent 30%, rgba(255,49,71,0.06) 50%, transparent 70%);
+      transform: translateX(-80%);
+      animation: sheenPanel 9s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .panel:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      transform: translateY(-2px);
     }
 
     .panel h3 {
@@ -595,6 +863,7 @@ def _dashboard_html() -> str:
       margin-bottom: 10px;
       display: grid;
       gap: 10px;
+      animation: panelIn 520ms var(--ease) both;
     }
 
     .row {
@@ -634,6 +903,7 @@ def _dashboard_html() -> str:
       border-radius: var(--radius-md);
       background: rgba(9, 9, 9, 0.92);
       padding: 12px;
+      animation: panelIn 520ms var(--ease) both;
     }
 
     .table-header {
@@ -701,6 +971,7 @@ def _dashboard_html() -> str:
       padding: 8px 0;
       border-bottom: 1px dashed #242424;
       font-size: 13px;
+      animation: rise 520ms var(--delay, 0ms) var(--ease) both;
     }
 
     .sim-metric strong { font-size: 17px; }
@@ -722,6 +993,7 @@ def _dashboard_html() -> str:
       background: #0d0d0d;
       display: grid;
       gap: 7px;
+      animation: rise 500ms var(--delay, 0ms) var(--ease) both;
     }
 
     .hash-line {
@@ -845,6 +1117,7 @@ def _dashboard_html() -> str:
       color: #d8d8d8;
       margin-right: 6px;
       margin-bottom: 6px;
+      font-family: var(--mono);
     }
 
     @keyframes rise {
@@ -878,6 +1151,38 @@ def _dashboard_html() -> str:
       50% { transform: translateX(-18px); }
     }
 
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
+
+    @keyframes panelIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes sheenPanel {
+      0%, 15% { opacity: 0; transform: translateX(-80%); }
+      30% { opacity: 1; }
+      60%, 100% { opacity: 0; transform: translateX(80%); }
+    }
+
+    @keyframes floatSoft {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-3px); }
+    }
+
+    @keyframes roadMove {
+      from { background-position-x: 0; }
+      to { background-position-x: -54px; }
+    }
+
+    @keyframes driveOff {
+      0% { transform: translateX(0) scale(1); }
+      72% { transform: translateX(640px) scale(1); }
+      100% { transform: translateX(860px) scale(0.92); opacity: 0.72; }
+    }
+
     @media (max-width: 980px) {
       .hero-inner {
         grid-template-columns: 1fr;
@@ -909,6 +1214,20 @@ def _dashboard_html() -> str:
       .bar-row {
         grid-template-columns: 120px 1fr 48px;
       }
+
+      .story-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-note {
+        text-align: left;
+        max-width: none;
+      }
+
+      .hero-rail {
+        flex-direction: column;
+        gap: 6px;
+      }
     }
 
     @media (max-width: 760px) {
@@ -934,6 +1253,12 @@ def _dashboard_html() -> str:
         opacity: 0.16;
       }
 
+      body.route-overview .car-bg {
+        right: -130px;
+        width: 1240px;
+        opacity: 0.4;
+      }
+
       .drawer-grid {
         grid-template-columns: 1fr;
       }
@@ -952,7 +1277,21 @@ def _dashboard_html() -> str:
     }
   </style>
 </head>
-<body>
+<body class="route-overview">
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loading-scene">
+      <div class="loading-track" aria-hidden="true">
+        <svg class="loading-car" viewBox="0 0 260 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" fill="#ff3147"/>
+          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" stroke="#ff8c98" stroke-opacity="0.5"/>
+          <circle cx="104" cy="60" r="9" fill="#0d0d0d"/>
+          <circle cx="196" cy="60" r="9" fill="#0d0d0d"/>
+        </svg>
+      </div>
+      <p class="loading-text">Preparing race strategy interface</p>
+    </div>
+  </div>
+
   <div class="car-bg" aria-hidden="true">
     <svg viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -973,8 +1312,11 @@ def _dashboard_html() -> str:
     <header class="hero">
       <div class="hero-inner">
         <div>
-          <p class="eyebrow">F1 STRATEGY LAB</p>
-          <h1 class="title">Strategy for the <span>2025 season</span></h1>
+          <div class="hero-rail">
+            <p class="brand">boxbox</p>
+            <p class="hero-note">Strategy Precition model for the 2025 Formula 1 season</p>
+          </div>
+          <h1 class="title">Race strategy</h1>
           <p class="sub" id="metaLine">Loading run data...</p>
           <div class="meta-pills">
             <span class="pill" id="modePill">mode</span>
@@ -983,18 +1325,19 @@ def _dashboard_html() -> str:
         </div>
         <div class="actions">
           <button class="btn primary" id="jumpStrategy">Explore race strategy</button>
-          <button class="btn" id="downloadCsv">Download CSV</button>
-          <button class="btn" id="downloadJson">Download JSON</button>
         </div>
       </div>
       <div class="tabs-wrap">
         <nav class="tabs" id="tabs">
           <button class="tab active" data-route="overview">Home</button>
           <button class="tab" data-route="races">Race Strategy</button>
-          <button class="tab" data-route="simulator">Scenario Lab</button>
-          <button class="tab" data-route="integrity">Data Health</button>
         </nav>
         <p class="route-hint">Track-level strategy plans with fallback options for race-day uncertainty.</p>
+      </div>
+      <div class="hero-marquee" aria-hidden="true">
+        <div class="hero-marquee-track">
+          Strategy explorer / tyre compounds / pit windows / contingency ranking / weather response / strategy explorer / tyre compounds / pit windows / contingency ranking / weather response /
+        </div>
       </div>
     </header>
 
@@ -1019,8 +1362,30 @@ def _dashboard_html() -> str:
             <svg class="spark" id="pointsSpark" viewBox="0 0 600 90" preserveAspectRatio="none"></svg>
           </div>
           <div class="panel">
-            <h3>Top Rounds by Strategy Score</h3>
+            <h3>Top Rounds by Win Probability</h3>
             <div id="topRounds"></div>
+          </div>
+        </section>
+
+        <section class="model-story reveal-on-scroll" id="modelStory">
+          <h3>What this strategy model does</h3>
+          <p>
+            The model learns from pre-season testing, practice sessions, and qualifying sessions to estimate race pace,
+            tyre behavior, pit timing, and strategy robustness before lights out.
+          </p>
+          <div class="story-grid">
+            <article class="story-card">
+              <h4>Testing</h4>
+              <p>Builds baseline pace and degradation priors from long-run and setup behavior.</p>
+            </article>
+            <article class="story-card">
+              <h4>Practice</h4>
+              <p>Uses session evolution, traffic, weather and fuel proxies to update tyre and race assumptions.</p>
+            </article>
+            <article class="story-card">
+              <h4>Qualifying</h4>
+              <p>Integrates one-lap performance into final race strategy ranking and fallback plans.</p>
+            </article>
           </div>
         </section>
       </section>
@@ -1066,48 +1431,10 @@ def _dashboard_html() -> str:
                   <th>Start Tyre</th>
                   <th>First Pit</th>
                   <th><button class="th-btn" data-sort="win_probability">Win Prob</button></th>
-                  <th><button class="th-btn" data-sort="strategy_score">Score</button></th>
                 </tr>
               </thead>
               <tbody id="raceRows"></tbody>
             </table>
-          </div>
-        </section>
-      </section>
-
-      <section class="page" id="page-simulator">
-        <section class="sim-grid">
-          <div class="panel">
-            <h3>Interactive Championship What-If</h3>
-            <p class="sub">Adjust assumptions to simulate alternate title probability outcomes.</p>
-            <div class="sim-row">
-              <label for="driverDelta">Driver form adjustment: <strong id="driverDeltaValue">0 pp</strong></label>
-              <input id="driverDelta" type="range" min="-30" max="30" step="1" value="0" />
-            </div>
-            <div class="sim-row">
-              <label for="teammateFactor">Team synergy adjustment: <strong id="teammateFactorValue">0 pp</strong></label>
-              <input id="teammateFactor" type="range" min="-30" max="30" step="1" value="0" />
-            </div>
-            <p class="hint">Adjustments are in percentage points of title confidence (pp).</p>
-          </div>
-          <div class="panel">
-            <h3>Projected Outcome</h3>
-            <div id="simMetrics"></div>
-          </div>
-        </section>
-      </section>
-
-      <section class="page" id="page-integrity">
-        <section class="integrity-grid">
-          <div class="panel">
-            <h3>Run Validation</h3>
-            <ul class="list" id="integritySummary"></ul>
-            <button class="btn" id="toggleManifest">Toggle Raw Manifest</button>
-            <pre class="raw" id="manifestRaw"></pre>
-          </div>
-          <div class="panel">
-            <h3>Checksums (click copy)</h3>
-            <div class="hash-list" id="hashList"></div>
           </div>
         </section>
       </section>
@@ -1124,19 +1451,16 @@ def _dashboard_html() -> str:
   </aside>
 
   <script>
-    const routes = ['overview', 'races', 'simulator', 'integrity'];
+    const routes = ['overview', 'races'];
     const state = {
       payload: null,
-      sortKey: 'strategy_score',
+      sortKey: 'win_probability',
       sortDir: 'desc',
       filteredRows: []
     };
 
     const fmt = (v, n=3) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : Number(v).toFixed(n);
     const pct = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : `${(Number(v) * 100).toFixed(1)}%`;
-    const sigmoid = (x) => 1 / (1 + Math.exp(-x));
-    const logit = (p) => Math.log(p / (1 - p));
-    const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
     const supportsViewTransition = typeof document.startViewTransition === 'function';
 
     function safeText(value) {
@@ -1176,6 +1500,40 @@ def _dashboard_html() -> str:
       for (const tab of document.querySelectorAll('.tab')) {
         tab.classList.toggle('active', tab.dataset.route === route);
       }
+      document.body.classList.toggle('route-overview', route === 'overview');
+      animatePageElements(route);
+    }
+
+    function animatePageElements(route) {
+      const page = document.getElementById(`page-${route}`);
+      if (!page) return;
+      const targets = page.querySelectorAll('.panel, .controls, .table-wrap, .card, .story-card');
+      targets.forEach((el, i) => {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = `rise 460ms ${Math.min(i * 40, 360)}ms var(--ease) both`;
+      });
+    }
+
+    function hideLoadingScreen() {
+      const loader = document.getElementById('loadingScreen');
+      if (!loader) return;
+      loader.classList.add('hide');
+    }
+
+    function initScrollReveal() {
+      const nodes = Array.from(document.querySelectorAll('.reveal-on-scroll'));
+      if (!nodes.length) return;
+
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('in-view');
+          obs.unobserve(entry.target);
+        });
+      }, { threshold: 0.18 });
+
+      nodes.forEach((node) => observer.observe(node));
     }
 
     function spawnRipple(target, clientX, clientY) {
@@ -1232,17 +1590,17 @@ def _dashboard_html() -> str:
       const top = document.getElementById('topRounds');
       top.innerHTML = '';
       const topRows = payload.top_rounds || [];
-      const maxScore = Math.max(...topRows.map(r => Number(r.strategy_score || 0)), 1);
+      const maxWin = Math.max(...topRows.map(r => Number(r.win_probability || 0)), 0.01);
       topRows.forEach((r, i) => {
-        const val = Number(r.strategy_score || 0);
-        const width = Math.max(4, Math.round((val / maxScore) * 100));
+        const val = Number(r.win_probability || 0);
+        const width = Math.max(4, Math.round((val / maxWin) * 100));
         const row = document.createElement('div');
         row.className = 'bar-row reveal';
         row.style.setProperty('--delay', `${110 + (i * 65)}ms`);
         row.innerHTML = `
           <span>${safeText(r.event_name)}</span>
           <div class='bar'><span data-width='${width}%'></span></div>
-          <span>${fmt(val, 2)}</span>
+          <span>${pct(val)}</span>
         `;
         top.appendChild(row);
         const fill = row.querySelector('span[data-width]');
@@ -1258,7 +1616,7 @@ def _dashboard_html() -> str:
         svg.innerHTML = '';
         return;
       }
-      const pts = rows.map(r => Number(r.strategy_score || 0));
+      const pts = rows.map(r => Number(r.win_probability || 0));
       const min = Math.min(...pts);
       const max = Math.max(...pts);
       const span = (max - min) || 1;
@@ -1330,7 +1688,6 @@ def _dashboard_html() -> str:
           <td>${safeText(r.start_compound || '-')}</td>
           <td>${r.first_pit_lap == null ? '-' : `L${fmt(r.first_pit_lap, 0)}`}</td>
           <td>${pct(r.win_probability)}</td>
-          <td>${fmt(r.strategy_score, 2)}</td>
         `;
         body.appendChild(tr);
       });
@@ -1361,7 +1718,6 @@ def _dashboard_html() -> str:
           <div class='kv'><p class='k'>First Pit Lap</p><p class='v'>${row.first_pit_lap == null ? '-' : `L${fmt(row.first_pit_lap, 0)}`}</p></div>
           <div class='kv'><p class='k'>Pit Laps</p><p class='v'>${safeText(row.pit_laps)}</p></div>
           <div class='kv'><p class='k'>Win Probability</p><p class='v'>${pct(row.win_probability)}</p></div>
-          <div class='kv'><p class='k'>Strategy Score</p><p class='v'>${fmt(row.strategy_score, 2)}</p></div>
           <div class='kv'><p class='k'>Robustness Window</p><p class='v'>${fmt(row.robustness_window, 2)}s</p></div>
           <div class='kv'><p class='k'>Fallback #2</p><p class='v'>${safeText(row.fallback_2_plan || row.fallback_2_strategy)}</p></div>
           <div class='kv'><p class='k'>Fallback #2 Trigger</p><p class='v'>${safeText(row.fallback_2_trigger)}</p></div>
@@ -1376,97 +1732,6 @@ def _dashboard_html() -> str:
     function closeDrawer() {
       document.getElementById('drawerBackdrop').classList.remove('show');
       document.getElementById('raceDrawer').classList.remove('open');
-    }
-
-    function renderSimulator() {
-      const champ = state.payload.championship || {};
-      const baseDriverProb = clamp(Number(champ.driver_title_probability || 0), 0.001, 0.999);
-      const baseConstructorsProb = clamp(Number(champ.constructors_title_probability || 0), 0.001, 0.999);
-      const driverDeltaPP = Number(document.getElementById('driverDelta').value || 0);
-      const teamDeltaPP = Number(document.getElementById('teammateFactor').value || 0);
-
-      const driverProb = sigmoid(logit(baseDriverProb) + driverDeltaPP / 9.5);
-      const constructorsProb = sigmoid(logit(baseConstructorsProb) + (driverDeltaPP + teamDeltaPP) / 11.0);
-      const titleStrength = (driverProb * 0.55 + constructorsProb * 0.45) * 100.0;
-
-      document.getElementById('driverDeltaValue').textContent = `${driverDeltaPP > 0 ? '+' : ''}${driverDeltaPP} pp`;
-      document.getElementById('teammateFactorValue').textContent = `${teamDeltaPP > 0 ? '+' : ''}${teamDeltaPP} pp`;
-
-      const sim = document.getElementById('simMetrics');
-      sim.innerHTML = `
-        <div class='sim-metric'><span>Baseline driver title probability</span><strong>${pct(baseDriverProb)}</strong></div>
-        <div class='sim-metric'><span>Baseline constructors title probability</span><strong>${pct(baseConstructorsProb)}</strong></div>
-        <div class='sim-metric'><span>Scenario driver title probability</span><strong>${pct(driverProb)}</strong></div>
-        <div class='sim-metric'><span>Scenario constructors title probability</span><strong>${pct(constructorsProb)}</strong></div>
-        <div class='sim-metric'><span>Combined title strength index</span><strong>${fmt(titleStrength, 1)}</strong></div>
-      `;
-    }
-
-    function renderIntegrity(payload) {
-      const rv = payload.round_validation || {};
-      const src = payload.source || {};
-      const summary = document.getElementById('integritySummary');
-      summary.innerHTML = '';
-      const items = [
-        `Mode: ${safeText(src.mode)}`,
-        `Manifest present: ${src.manifest_present ? 'yes' : 'no'}`,
-        `Expected rounds: ${safeText(rv.expected_rounds)}`,
-        `Produced rounds: ${safeText(rv.produced_rounds)}`,
-        `Missing events: ${(rv.missing_events || []).length}`,
-        `Extra events: ${(rv.extra_events || []).length}`
-      ];
-      items.forEach(text => {
-        const li = document.createElement('li');
-        li.textContent = text;
-        summary.appendChild(li);
-      });
-
-      const hashes = (payload.manifest && payload.manifest.sha256) ? payload.manifest.sha256 : {};
-      const list = document.getElementById('hashList');
-      list.innerHTML = '';
-      const entries = Object.entries(hashes);
-      if (!entries.length) {
-        const empty = document.createElement('p');
-        empty.className = 'hint';
-        empty.textContent = 'No manifest checksum data found. Run a locked snapshot to populate this.';
-        list.appendChild(empty);
-      } else {
-        entries.forEach(([name, hash]) => {
-          const item = document.createElement('div');
-          item.className = 'hash-item';
-          item.innerHTML = `
-            <div class='hash-line'><strong>${name}</strong><button class='btn' data-copy='${hash}'>Copy</button></div>
-            <code>${hash}</code>
-          `;
-          list.appendChild(item);
-        });
-      }
-
-      document.getElementById('manifestRaw').textContent = JSON.stringify(payload.manifest || {}, null, 2);
-    }
-
-    function toCsv(rows) {
-      if (!rows.length) return '';
-      const cols = Object.keys(rows[0]);
-      const esc = (v) => {
-        const s = v === null || v === undefined ? '' : String(v);
-        return `"${s.replaceAll('"', '""')}"`;
-      };
-      const lines = [cols.join(',')];
-      rows.forEach(r => lines.push(cols.map(c => esc(r[c])).join(',')));
-      return lines.join('\\n');
-    }
-
-    function downloadText(filename, text, type) {
-      const blob = new Blob([text], { type });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = filename;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
     }
 
     function bindEvents() {
@@ -1519,33 +1784,6 @@ def _dashboard_html() -> str:
       });
       document.getElementById('closeDrawer').addEventListener('click', closeDrawer);
       document.getElementById('drawerBackdrop').addEventListener('click', closeDrawer);
-
-      document.getElementById('driverDelta').addEventListener('input', renderSimulator);
-      document.getElementById('teammateFactor').addEventListener('input', renderSimulator);
-
-      document.getElementById('hashList').addEventListener('click', async (event) => {
-        const btn = event.target.closest('button[data-copy]');
-        if (!btn) return;
-        const val = btn.getAttribute('data-copy') || '';
-        try {
-          await navigator.clipboard.writeText(val);
-          btn.textContent = 'Copied';
-          setTimeout(() => { btn.textContent = 'Copy'; }, 900);
-        } catch {
-          btn.textContent = 'Failed';
-        }
-      });
-      document.getElementById('toggleManifest').addEventListener('click', () => {
-        document.getElementById('manifestRaw').classList.toggle('show');
-      });
-
-      document.getElementById('downloadCsv').addEventListener('click', () => {
-        const rows = state.payload ? (state.payload.strategy_rows || []) : [];
-        downloadText('strategy_recommendations_2025.csv', toCsv(rows), 'text/csv;charset=utf-8');
-      });
-      document.getElementById('downloadJson').addEventListener('click', () => {
-        downloadText('strategy_payload.json', JSON.stringify(state.payload || {}, null, 2), 'application/json');
-      });
     }
 
     function renderHeader(payload) {
@@ -1579,14 +1817,15 @@ def _dashboard_html() -> str:
       renderHeader(payload);
       renderOverview(payload);
       renderRaceTable();
-      renderSimulator();
-      renderIntegrity(payload);
       bindEvents();
       renderRoute(routeFromHash());
+      initScrollReveal();
+      setTimeout(hideLoadingScreen, 1850);
     }
 
     boot().catch((err) => {
       document.getElementById('metaLine').textContent = `Failed to load website data: ${err}`;
+      hideLoadingScreen();
     });
   </script>
 </body>
@@ -1598,7 +1837,7 @@ class _Handler(BaseHTTPRequestHandler):
 
     def do_GET(self) -> None:  # noqa: N802
         path = urlparse(self.path).path
-        if path in {"/", "/index.html", "/overview", "/races", "/simulator", "/integrity"}:
+        if path in {"/", "/index.html", "/overview", "/races"}:
             body = self.html_text.encode("utf-8")
             self.send_response(200)
             self.send_header("Content-Type", "text/html; charset=utf-8")

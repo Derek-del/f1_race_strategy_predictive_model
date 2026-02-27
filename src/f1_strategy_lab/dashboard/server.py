@@ -226,7 +226,7 @@ def _dashboard_html() -> str:
 
     body {
       margin: 0;
-      padding: 24px;
+      padding: 36px;
       font-family: "Sora", "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--ink);
       background:
@@ -322,44 +322,57 @@ def _dashboard_html() -> str:
 
     .car-bg {
       position: fixed;
-      right: -180px;
-      top: 64px;
-      width: min(1120px, 92vw);
-      opacity: 0.18;
+      right: -150px;
+      top: 56px;
+      width: min(1240px, 98vw);
+      opacity: 0.14;
       z-index: 0;
       pointer-events: none;
-      filter: drop-shadow(0 0 22px rgba(255, 49, 71, 0.35));
-      animation: drift 16s ease-in-out infinite;
-      transition: opacity 360ms var(--ease), transform 360ms var(--ease), right 360ms var(--ease), width 360ms var(--ease), top 360ms var(--ease);
+      --parallax-x: 0px;
+      --parallax-y: 0px;
+      transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
+      filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.58));
+      transition: opacity 420ms var(--ease), transform 420ms var(--ease), right 420ms var(--ease), width 420ms var(--ease), top 420ms var(--ease);
     }
 
     body.route-overview .car-bg {
-      right: -28px;
-      top: 84px;
-      width: min(1320px, 100vw);
-      opacity: 0.5;
-      transform: scale(1.04);
-      filter: drop-shadow(0 0 34px rgba(255, 49, 71, 0.5));
+      right: -6px;
+      top: 74px;
+      width: min(1460px, 108vw);
+      opacity: 0.95;
+      filter: drop-shadow(0 0 36px rgba(0, 0, 0, 0.62));
     }
 
     .car-bg svg {
       width: 100%;
       height: auto;
       display: block;
+      transform-origin: center center;
+      opacity: 0.2;
+      transition: opacity 420ms var(--ease), transform 420ms var(--ease);
+    }
+
+    body.route-overview .car-bg svg {
+      opacity: 0.76;
+      transform: scale(0.9);
+    }
+
+    body.route-overview.loaded .car-bg svg {
+      animation: silhouetteBloom 1700ms var(--ease) forwards, silhouetteIdle 9s 1700ms ease-in-out infinite;
     }
 
     .site {
-      max-width: 1220px;
+      max-width: 1320px;
       margin: 0 auto;
       position: relative;
       z-index: 1;
       display: grid;
-      gap: 16px;
+      gap: 30px;
     }
 
     main {
       display: grid;
-      gap: 14px;
+      gap: 30px;
     }
 
     .hero {
@@ -397,8 +410,8 @@ def _dashboard_html() -> str:
     .hero-inner {
       display: grid;
       grid-template-columns: 1.2fr auto;
-      gap: 16px;
-      padding: 22px;
+      gap: 28px;
+      padding: 36px;
       align-items: start;
     }
 
@@ -406,8 +419,8 @@ def _dashboard_html() -> str:
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
-      gap: 12px;
-      margin-bottom: 12px;
+      gap: 16px;
+      margin-bottom: 16px;
     }
 
     .brand {
@@ -422,9 +435,9 @@ def _dashboard_html() -> str:
 
     .hero-note {
       margin: 0;
-      font-size: 11px;
+      font-size: 13px;
       color: #d0a6ac;
-      max-width: 360px;
+      max-width: 520px;
       text-align: right;
       letter-spacing: 0.08em;
       line-height: 1.4;
@@ -433,8 +446,8 @@ def _dashboard_html() -> str:
     }
 
     .title {
-      margin: 0 0 8px 0;
-      font-size: clamp(34px, 5vw, 62px);
+      margin: 0 0 12px 0;
+      font-size: clamp(38px, 5.4vw, 72px);
       line-height: 1.02;
       font-weight: 700;
       max-width: 840px;
@@ -446,15 +459,15 @@ def _dashboard_html() -> str:
     .sub {
       margin: 0;
       color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
+      font-size: 16px;
+      line-height: 1.65;
     }
 
     .meta-pills {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 14px;
+      gap: 10px;
+      margin-top: 16px;
     }
 
     .pill {
@@ -462,8 +475,8 @@ def _dashboard_html() -> str:
       border-radius: 999px;
       background: rgba(16, 16, 16, 0.85);
       color: #d3d3d3;
-      padding: 4px 11px;
-      font-size: 11px;
+      padding: 7px 15px;
+      font-size: 13px;
       font-family: var(--mono);
       white-space: nowrap;
       overflow: hidden;
@@ -473,17 +486,17 @@ def _dashboard_html() -> str:
 
     .actions {
       display: grid;
-      gap: 8px;
-      min-width: 210px;
+      gap: 14px;
+      min-width: 260px;
     }
 
     .btn {
       border: 1px solid var(--line);
       background: rgba(18, 18, 18, 0.92);
       color: #f2f2f2;
-      border-radius: 12px;
-      font-size: 12px;
-      padding: 10px 12px;
+      border-radius: 14px;
+      font-size: 14px;
+      padding: 14px 18px;
       cursor: pointer;
       transition: transform 180ms var(--ease), border-color 180ms var(--ease), background-color 180ms var(--ease);
       position: relative;
@@ -520,41 +533,21 @@ def _dashboard_html() -> str:
     }
 
     .tabs-wrap {
-      padding: 0 22px 18px;
+      padding: 0 36px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       flex-wrap: wrap;
-    }
-
-    .hero-marquee {
-      border-top: 1px solid var(--line);
-      border-bottom: 1px solid var(--line);
-      background: rgba(8, 8, 8, 0.82);
-      overflow: hidden;
-      white-space: nowrap;
-    }
-
-    .hero-marquee-track {
-      display: inline-block;
-      padding: 8px 0;
-      min-width: 200%;
-      color: rgba(255, 255, 255, 0.75);
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      font-family: var(--mono);
-      animation: marquee 22s linear infinite;
     }
 
     .tabs {
       display: flex;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: wrap;
       border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 5px;
+      padding: 8px;
       background: rgba(8, 8, 8, 0.86);
     }
 
@@ -563,8 +556,8 @@ def _dashboard_html() -> str:
       background: transparent;
       color: #bcbcbc;
       border-radius: 999px;
-      font-size: 12px;
-      padding: 8px 13px;
+      font-size: 14px;
+      padding: 11px 18px;
       cursor: pointer;
       transition: all 180ms var(--ease);
       position: relative;
@@ -601,7 +594,7 @@ def _dashboard_html() -> str:
 
     .route-hint {
       margin: 0;
-      font-size: 12px;
+      font-size: 14px;
       color: var(--muted);
       font-family: var(--mono);
       letter-spacing: 0.03em;
@@ -610,7 +603,7 @@ def _dashboard_html() -> str:
     .page {
       display: none;
       opacity: 0;
-      transform: translateY(10px);
+      transform: translateY(18px);
     }
 
     .page.active {
@@ -620,8 +613,8 @@ def _dashboard_html() -> str:
 
     .reveal-on-scroll {
       opacity: 0;
-      transform: translateY(18px);
-      transition: transform 620ms var(--ease), opacity 620ms var(--ease);
+      transform: translateY(28px);
+      transition: transform 780ms var(--ease), opacity 780ms var(--ease);
     }
 
     .reveal-on-scroll.in-view {
@@ -633,8 +626,8 @@ def _dashboard_html() -> str:
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       background: linear-gradient(150deg, rgba(15, 15, 15, 0.92) 0%, rgba(8, 8, 8, 0.9) 100%);
-      padding: 28px;
-      margin-bottom: 14px;
+      padding: 52px;
+      margin-bottom: 30px;
       position: relative;
       overflow: hidden;
       transform-origin: center;
@@ -656,7 +649,7 @@ def _dashboard_html() -> str:
 
     .landing h2 {
       margin: 0 0 10px 0;
-      font-size: clamp(28px, 4.6vw, 50px);
+      font-size: clamp(32px, 5vw, 58px);
       letter-spacing: -0.02em;
       max-width: 760px;
       text-wrap: balance;
@@ -666,16 +659,16 @@ def _dashboard_html() -> str:
       margin: 0 0 16px 0;
       max-width: 760px;
       color: #b9b9b9;
-      line-height: 1.6;
-      font-size: 14px;
+      line-height: 1.72;
+      font-size: 17px;
     }
 
     .model-story {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
       background: linear-gradient(150deg, rgba(13,13,13,0.95) 0%, rgba(8,8,8,0.92) 100%);
-      padding: 24px;
-      margin-top: 14px;
+      padding: 36px;
+      margin-top: 30px;
       position: relative;
       overflow: hidden;
     }
@@ -690,32 +683,100 @@ def _dashboard_html() -> str:
 
     .model-story h3 {
       margin: 0 0 10px 0;
-      font-size: clamp(22px, 3.2vw, 32px);
+      font-size: clamp(28px, 3.8vw, 42px);
       line-height: 1.1;
       letter-spacing: -0.02em;
       max-width: 780px;
     }
 
     .model-story p {
-      margin: 0 0 14px 0;
+      margin: 0 0 18px 0;
       max-width: 860px;
       color: #bcbcbc;
+      font-size: 17px;
+      line-height: 1.72;
+    }
+
+    .pop-flow {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(150deg, rgba(12,12,12,0.95) 0%, rgba(8,8,8,0.92) 100%);
+      padding: 36px;
+      margin-top: 30px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .pop-flow h3 {
+      margin: 0 0 12px 0;
+      font-size: clamp(26px, 3.6vw, 40px);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      max-width: 850px;
+    }
+
+    .pop-flow p {
+      margin: 0 0 16px 0;
+      max-width: 900px;
+      font-size: 16px;
+      line-height: 1.7;
+      color: #bdbdbd;
+    }
+
+    .pop-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .pop-item {
+      border: 1px solid #242424;
+      border-radius: var(--radius-sm);
+      background: rgba(14,14,14,0.9);
+      padding: 20px;
+      opacity: 0;
+      transform: translateY(20px) scale(0.98);
+      transition: border-color 220ms var(--ease), transform 220ms var(--ease), background-color 220ms var(--ease);
+    }
+
+    .reveal-on-scroll.in-view .pop-item {
+      animation: popIn 620ms calc(var(--i, 0) * 140ms) var(--ease) forwards;
+    }
+
+    .pop-item:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 49, 71, 0.4);
+      background: rgba(20,12,13,0.9);
+    }
+
+    .pop-item h4 {
+      margin: 0 0 8px 0;
       font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+      color: #f2c0c7;
+      font-family: var(--mono);
+    }
+
+    .pop-item p {
+      margin: 0;
+      font-size: 16px;
+      color: #d0d0d0;
       line-height: 1.6;
     }
 
     .story-grid {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
     }
 
     .story-card {
       border: 1px solid #212121;
       border-radius: var(--radius-sm);
       background: rgba(13,13,13,0.9);
-      padding: 12px;
-      min-height: 110px;
+      padding: 22px;
+      min-height: 150px;
       transition: transform 260ms var(--ease), border-color 260ms var(--ease), background-color 260ms var(--ease);
       animation: rise 600ms var(--delay, 0ms) var(--ease) both;
     }
@@ -732,7 +793,7 @@ def _dashboard_html() -> str:
 
     .story-card h4 {
       margin: 0 0 7px 0;
-      font-size: 12px;
+      font-size: 14px;
       letter-spacing: 0.09em;
       text-transform: uppercase;
       color: #f1b8bf;
@@ -740,23 +801,23 @@ def _dashboard_html() -> str:
 
     .story-card p {
       margin: 0;
-      font-size: 13px;
+      font-size: 15px;
       color: #d0d0d0;
-      line-height: 1.45;
+      line-height: 1.62;
     }
 
     .cards {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-      gap: 10px;
-      margin-bottom: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-bottom: 24px;
     }
 
     .card {
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       background: rgba(14, 14, 14, 0.88);
-      padding: 12px;
+      padding: 22px;
       opacity: 0;
       transform: translateY(8px);
       transition: border-color 220ms var(--ease), transform 220ms var(--ease), box-shadow 220ms var(--ease);
@@ -770,20 +831,20 @@ def _dashboard_html() -> str:
       box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
     }
 
-    .label { margin: 0 0 6px 0; color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; }
-    .value { margin: 0; font-size: 21px; font-weight: 600; }
+    .label { margin: 0 0 10px 0; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; }
+    .value { margin: 0; font-size: 32px; font-weight: 600; }
 
     .grid-2 {
       display: grid;
       grid-template-columns: 1.05fr 1.95fr;
-      gap: 12px;
+      gap: 20px;
     }
 
     .panel {
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       background: rgba(10, 10, 10, 0.9);
-      padding: 14px;
+      padding: 24px;
       position: relative;
       overflow: hidden;
       transition: border-color 220ms var(--ease), transform 220ms var(--ease);
@@ -806,8 +867,8 @@ def _dashboard_html() -> str:
     }
 
     .panel h3 {
-      margin: 0 0 10px 0;
-      font-size: 15px;
+      margin: 0 0 12px 0;
+      font-size: 22px;
       letter-spacing: 0.02em;
     }
 
@@ -817,11 +878,11 @@ def _dashboard_html() -> str:
 
     .bar-row {
       display: grid;
-      grid-template-columns: 160px 1fr 54px;
-      gap: 8px;
+      grid-template-columns: 210px 1fr 82px;
+      gap: 14px;
       align-items: center;
-      margin: 8px 0;
-      font-size: 12px;
+      margin: 14px 0;
+      font-size: 14px;
       opacity: 0;
       transform: translateX(-6px);
     }
@@ -829,7 +890,7 @@ def _dashboard_html() -> str:
     .bar-row.reveal { animation: slide 360ms var(--delay, 0ms) var(--ease) forwards; }
 
     .bar {
-      height: 8px;
+      height: 12px;
       border-radius: 999px;
       background: #1b1b1b;
       overflow: hidden;
@@ -847,11 +908,11 @@ def _dashboard_html() -> str:
 
     .spark {
       width: 100%;
-      height: 86px;
+      height: 124px;
       border: 1px solid #202020;
       border-radius: 10px;
       background: #0a0a0a;
-      margin-top: 10px;
+      margin-top: 12px;
       display: block;
     }
 
@@ -859,24 +920,24 @@ def _dashboard_html() -> str:
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       background: rgba(10, 10, 10, 0.92);
-      padding: 12px;
-      margin-bottom: 10px;
+      padding: 24px;
+      margin-bottom: 18px;
       display: grid;
-      gap: 10px;
+      gap: 14px;
       animation: panelIn 520ms var(--ease) both;
     }
 
     .row {
       display: grid;
       grid-template-columns: 1.5fr 0.7fr 1fr auto;
-      gap: 10px;
+      gap: 16px;
       align-items: center;
     }
 
-    .field { display: grid; gap: 4px; }
+    .field { display: grid; gap: 6px; }
 
     .field label {
-      font-size: 11px;
+      font-size: 13px;
       color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.06em;
@@ -888,8 +949,8 @@ def _dashboard_html() -> str:
       border-radius: 10px;
       background: #111;
       color: var(--ink);
-      font-size: 13px;
-      padding: 8px 9px;
+      font-size: 15px;
+      padding: 12px 13px;
       outline: none;
     }
 
@@ -902,7 +963,7 @@ def _dashboard_html() -> str:
       border: 1px solid var(--line);
       border-radius: var(--radius-md);
       background: rgba(9, 9, 9, 0.92);
-      padding: 12px;
+      padding: 22px;
       animation: panelIn 520ms var(--ease) both;
     }
 
@@ -910,24 +971,29 @@ def _dashboard_html() -> str:
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
 
-    .hint { margin: 0; font-size: 12px; color: var(--muted); }
+    .hint { margin: 0; font-size: 14px; color: var(--muted); }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 12px;
+      font-size: 15px;
     }
 
     th, td {
       text-align: left;
-      padding: 10px 8px;
+      padding: 16px 14px;
       border-bottom: 1px solid #1d1d1d;
       vertical-align: top;
+    }
+
+    .table-header strong {
+      font-size: 18px;
+      letter-spacing: 0.01em;
     }
 
     thead th { background: #101010; color: #e8e8e8; }
@@ -945,7 +1011,7 @@ def _dashboard_html() -> str:
 
     tbody tr {
       opacity: 0;
-      transform: translateY(7px);
+      transform: translateY(9px);
       cursor: pointer;
       transition: background-color 160ms ease;
     }
@@ -953,7 +1019,7 @@ def _dashboard_html() -> str:
     tbody tr.reveal { animation: rise 360ms var(--delay, 0ms) var(--ease) forwards; }
     tbody tr:hover { background: rgba(255,49,71,0.08); }
 
-    .mono { font-family: "SFMono-Regular", Menlo, monospace; color: #bdbdbd; font-size: 11px; }
+    .mono { font-family: "SFMono-Regular", Menlo, monospace; color: #bdbdbd; font-size: 12px; }
 
     .sim-grid {
       display: grid;
@@ -1048,13 +1114,13 @@ def _dashboard_html() -> str:
       top: 0;
       right: 0;
       height: 100%;
-      width: min(480px, 100%);
+      width: min(560px, 100%);
       background: rgba(8, 8, 8, 0.98);
       border-left: 1px solid #232323;
       transform: translateX(102%);
       transition: transform 300ms var(--ease);
       z-index: 20;
-      padding: 14px;
+      padding: 18px;
       display: grid;
       grid-template-rows: auto 1fr;
       gap: 10px;
@@ -1072,10 +1138,10 @@ def _dashboard_html() -> str:
 
     .drawer-body {
       overflow: auto;
-      font-size: 13px;
+      font-size: 14px;
       color: #e4e4e4;
       display: grid;
-      gap: 8px;
+      gap: 12px;
     }
 
     .drawer-grid {
@@ -1088,14 +1154,14 @@ def _dashboard_html() -> str:
       border: 1px solid #222;
       border-radius: var(--radius-sm);
       background: #111;
-      padding: 8px;
+      padding: 12px;
     }
 
     .kv p { margin: 0; }
 
     .kv .k {
       color: var(--muted);
-      font-size: 10px;
+      font-size: 11px;
       margin-bottom: 4px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
@@ -1103,7 +1169,7 @@ def _dashboard_html() -> str:
 
     .kv .v {
       color: #f2f2f2;
-      font-size: 14px;
+      font-size: 16px;
       font-weight: 600;
       line-height: 1.3;
     }
@@ -1112,8 +1178,8 @@ def _dashboard_html() -> str:
       display: inline-block;
       border: 1px solid #282828;
       border-radius: 999px;
-      padding: 4px 9px;
-      font-size: 11px;
+      padding: 6px 11px;
+      font-size: 12px;
       color: #d8d8d8;
       margin-right: 6px;
       margin-bottom: 6px;
@@ -1151,9 +1217,20 @@ def _dashboard_html() -> str:
       50% { transform: translateX(-18px); }
     }
 
-    @keyframes marquee {
-      from { transform: translateX(0); }
-      to { transform: translateX(-50%); }
+    @keyframes silhouetteBloom {
+      0% { transform: scale(0.9); opacity: 0.88; }
+      58% { transform: scale(1.28); opacity: 0.62; }
+      100% { transform: scale(1.12); opacity: 0.38; }
+    }
+
+    @keyframes silhouetteIdle {
+      0%, 100% { transform: scale(1.12) translateY(0); }
+      50% { transform: scale(1.14) translateY(-4px); }
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(22px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     @keyframes panelIn {
@@ -1192,7 +1269,7 @@ def _dashboard_html() -> str:
         grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
-      .grid-2, .sim-grid, .integrity-grid, .row {
+      .grid-2, .row {
         grid-template-columns: 1fr;
       }
 
@@ -1212,11 +1289,19 @@ def _dashboard_html() -> str:
       }
 
       .bar-row {
-        grid-template-columns: 120px 1fr 48px;
+        grid-template-columns: 140px 1fr 58px;
       }
 
       .story-grid {
         grid-template-columns: 1fr;
+      }
+
+      .pop-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .cards {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       }
 
       .hero-note {
@@ -1232,14 +1317,14 @@ def _dashboard_html() -> str:
 
     @media (max-width: 760px) {
       body {
-        padding: 12px;
+        padding: 16px;
       }
 
       .landing,
       .hero-inner,
       .tabs-wrap {
-        padding-left: 14px;
-        padding-right: 14px;
+        padding-left: 22px;
+        padding-right: 22px;
       }
 
       .actions {
@@ -1247,16 +1332,17 @@ def _dashboard_html() -> str:
       }
 
       .car-bg {
-        top: 80px;
-        right: -280px;
-        width: 1100px;
-        opacity: 0.16;
+        top: 72px;
+        right: -210px;
+        width: 1040px;
+        opacity: 0.18;
       }
 
       body.route-overview .car-bg {
-        right: -130px;
-        width: 1240px;
-        opacity: 0.4;
+        right: -76px;
+        top: 88px;
+        width: 1180px;
+        opacity: 0.74;
       }
 
       .drawer-grid {
@@ -1274,6 +1360,12 @@ def _dashboard_html() -> str:
         opacity: 1 !important;
         transform: none !important;
       }
+
+      .car-bg,
+      .car-bg svg {
+        transform: none !important;
+        animation: none !important;
+      }
     }
   </style>
 </head>
@@ -1282,10 +1374,10 @@ def _dashboard_html() -> str:
     <div class="loading-scene">
       <div class="loading-track" aria-hidden="true">
         <svg class="loading-car" viewBox="0 0 260 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" fill="#ff3147"/>
-          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" stroke="#ff8c98" stroke-opacity="0.5"/>
-          <circle cx="104" cy="60" r="9" fill="#0d0d0d"/>
-          <circle cx="196" cy="60" r="9" fill="#0d0d0d"/>
+          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" fill="#0f1013"/>
+          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" stroke="#f2f2f2" stroke-opacity="0.4"/>
+          <circle cx="104" cy="60" r="9" fill="#0b0c0f"/>
+          <circle cx="196" cy="60" r="9" fill="#0b0c0f"/>
         </svg>
       </div>
       <p class="loading-text">Preparing race strategy interface</p>
@@ -1296,15 +1388,18 @@ def _dashboard_html() -> str:
     <svg viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="carFill" x1="70" y1="120" x2="1260" y2="300" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#8d101f"/>
-          <stop offset="0.52" stop-color="#ff3147"/>
-          <stop offset="1" stop-color="#6b0b16"/>
+          <stop stop-color="#0b0c0f"/>
+          <stop offset="0.52" stop-color="#12141a"/>
+          <stop offset="1" stop-color="#07080b"/>
         </linearGradient>
       </defs>
       <path d="M90 270C160 247 238 235 316 236H420L514 196H668L760 146H945L1048 198H1200C1236 199 1269 217 1287 247L1318 292H1214L1186 262H1016L980 304H816L780 262H572L540 304H386L356 264H214L162 294H84L90 270Z" fill="url(#carFill)"/>
-      <path d="M90 270C160 247 238 235 316 236H420L514 196H668L760 146H945L1048 198H1200C1236 199 1269 217 1287 247L1318 292H1214L1186 262H1016L980 304H816L780 262H572L540 304H386L356 264H214L162 294H84L90 270Z" stroke="#ff8593" stroke-opacity="0.45" stroke-width="2"/>
-      <circle cx="470" cy="316" r="42" fill="#141414"/>
-      <circle cx="916" cy="316" r="42" fill="#141414"/>
+      <path d="M90 270C160 247 238 235 316 236H420L514 196H668L760 146H945L1048 198H1200C1236 199 1269 217 1287 247L1318 292H1214L1186 262H1016L980 304H816L780 262H572L540 304H386L356 264H214L162 294H84L90 270Z" stroke="#fbfbfb" stroke-opacity="0.24" stroke-width="2"/>
+      <path d="M360 252C488 244 610 230 724 206C800 190 872 174 944 156" stroke="#ffffff" stroke-opacity="0.22" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="470" cy="316" r="42" fill="#0b0c0f"/>
+      <circle cx="916" cy="316" r="42" fill="#0b0c0f"/>
+      <circle cx="470" cy="316" r="14" fill="#f7f7f7" fill-opacity="0.7"/>
+      <circle cx="916" cy="316" r="14" fill="#f7f7f7" fill-opacity="0.7"/>
     </svg>
   </div>
 
@@ -1334,11 +1429,6 @@ def _dashboard_html() -> str:
         </nav>
         <p class="route-hint">Track-level strategy plans with fallback options for race-day uncertainty.</p>
       </div>
-      <div class="hero-marquee" aria-hidden="true">
-        <div class="hero-marquee-track">
-          Strategy explorer / tyre compounds / pit windows / contingency ranking / weather response / strategy explorer / tyre compounds / pit windows / contingency ranking / weather response /
-        </div>
-      </div>
     </header>
 
     <main>
@@ -1353,6 +1443,31 @@ def _dashboard_html() -> str:
         </section>
 
         <section class="cards" id="kpiCards"></section>
+
+        <section class="pop-flow reveal-on-scroll" id="scrollSignals">
+          <h3>As you scroll, race signals appear in sequence</h3>
+          <p>
+            Information is staged to stay readable: pace baseline first, then tyre and weather pressure, then fallback triggers.
+          </p>
+          <div class="pop-grid">
+            <article class="pop-item" style="--i:0">
+              <h4>Baseline Pace</h4>
+              <p>Pre-season and long-run testing anchor the opening race pace estimate.</p>
+            </article>
+            <article class="pop-item" style="--i:1">
+              <h4>Practice Drift</h4>
+              <p>Fuel proxies, traffic and track evolution refine tyre life and stint windows.</p>
+            </article>
+            <article class="pop-item" style="--i:2">
+              <h4>Qualifying Context</h4>
+              <p>Grid position and one-lap delta set start compound risk and first pit timing.</p>
+            </article>
+            <article class="pop-item" style="--i:3">
+              <h4>Weather Pressure</h4>
+              <p>Forecast shifts activate alternate compounds and shorter or longer opening stints.</p>
+            </article>
+          </div>
+        </section>
 
         <section class="grid-2">
           <div class="panel">
@@ -1388,6 +1503,31 @@ def _dashboard_html() -> str:
             </article>
           </div>
         </section>
+
+        <section class="pop-flow reveal-on-scroll" id="contingencyStory">
+          <h3>Fallback strategy logic for race-day disruptions</h3>
+          <p>
+            Every round includes a primary plan plus two backup plans so you can react without rebuilding strategy mid-race.
+          </p>
+          <div class="pop-grid">
+            <article class="pop-item" style="--i:0">
+              <h4>Fallback 2</h4>
+              <p>Used for weather shifts, safety car windows or early tyre thermal drop.</p>
+            </article>
+            <article class="pop-item" style="--i:1">
+              <h4>Fallback 3</h4>
+              <p>Used for reliability risk, driver recovery laps or aggressive undercut defense.</p>
+            </article>
+            <article class="pop-item" style="--i:2">
+              <h4>Trigger Rules</h4>
+              <p>Each fallback includes explicit trigger text so operations can switch fast.</p>
+            </article>
+            <article class="pop-item" style="--i:3">
+              <h4>Pit Guidance</h4>
+              <p>Plans remain lap-specific: start tyre, first stop lap and full compound chain.</p>
+            </article>
+          </div>
+        </section>
       </section>
 
       <section class="page" id="page-races">
@@ -1414,6 +1554,31 @@ def _dashboard_html() -> str:
             </div>
           </div>
           <p class="hint" id="filterState">No filters active.</p>
+        </section>
+
+        <section class="pop-flow reveal-on-scroll" id="raceGuide">
+          <h3>How to read each race strategy row</h3>
+          <p>
+            Click any row for the full plan. The table keeps key decisions visible: starting tyre, pit windows, and contingency trigger.
+          </p>
+          <div class="pop-grid">
+            <article class="pop-item" style="--i:0">
+              <h4>Primary Plan</h4>
+              <p>Shows pit count, opening compound and first planned pit lap.</p>
+            </article>
+            <article class="pop-item" style="--i:1">
+              <h4>Fallback Triggers</h4>
+              <p>Weather, reliability and incident scenarios are mapped to backup plans.</p>
+            </article>
+            <article class="pop-item" style="--i:2">
+              <h4>Win Probability</h4>
+              <p>Filter for races where projected execution gives high upside.</p>
+            </article>
+            <article class="pop-item" style="--i:3">
+              <h4>Drilldown Drawer</h4>
+              <p>Open full strategy text with fallback #2 and #3 before race day decisions.</p>
+            </article>
+          </div>
         </section>
 
         <section class="table-wrap">
@@ -1458,6 +1623,7 @@ def _dashboard_html() -> str:
       sortDir: 'desc',
       filteredRows: []
     };
+    let scrollObserver = null;
 
     const fmt = (v, n=3) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : Number(v).toFixed(n);
     const pct = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : `${(Number(v) * 100).toFixed(1)}%`;
@@ -1501,7 +1667,13 @@ def _dashboard_html() -> str:
         tab.classList.toggle('active', tab.dataset.route === route);
       }
       document.body.classList.toggle('route-overview', route === 'overview');
+      const car = document.querySelector('.car-bg');
+      if (car && route !== 'overview') {
+        car.style.setProperty('--parallax-x', '0px');
+        car.style.setProperty('--parallax-y', '0px');
+      }
       animatePageElements(route);
+      requestAnimationFrame(initScrollReveal);
     }
 
     function animatePageElements(route) {
@@ -1519,21 +1691,49 @@ def _dashboard_html() -> str:
       const loader = document.getElementById('loadingScreen');
       if (!loader) return;
       loader.classList.add('hide');
+      document.body.classList.add('loaded');
+    }
+
+    function initCarParallax() {
+      const car = document.querySelector('.car-bg');
+      if (!car) return;
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      const reset = () => {
+        car.style.setProperty('--parallax-x', '0px');
+        car.style.setProperty('--parallax-y', '0px');
+      };
+
+      window.addEventListener('pointermove', (event) => {
+        if (!document.body.classList.contains('route-overview')) {
+          reset();
+          return;
+        }
+        const nx = (event.clientX / window.innerWidth) - 0.5;
+        const ny = (event.clientY / window.innerHeight) - 0.5;
+        car.style.setProperty('--parallax-x', `${(nx * 26).toFixed(2)}px`);
+        car.style.setProperty('--parallax-y', `${(ny * 16).toFixed(2)}px`);
+      });
+
+      window.addEventListener('blur', reset);
+      document.addEventListener('mouseleave', reset);
     }
 
     function initScrollReveal() {
-      const nodes = Array.from(document.querySelectorAll('.reveal-on-scroll'));
+      const nodes = Array.from(document.querySelectorAll('.reveal-on-scroll:not(.in-view)'));
       if (!nodes.length) return;
 
-      const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          entry.target.classList.add('in-view');
-          obs.unobserve(entry.target);
-        });
-      }, { threshold: 0.18 });
+      if (!scrollObserver) {
+        scrollObserver = new IntersectionObserver((entries) => {
+          entries.forEach((entry) => {
+            if (!entry.isIntersecting) return;
+            entry.target.classList.add('in-view');
+            scrollObserver.unobserve(entry.target);
+          });
+        }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+      }
 
-      nodes.forEach((node) => observer.observe(node));
+      nodes.forEach((node) => scrollObserver.observe(node));
     }
 
     function spawnRipple(target, clientX, clientY) {
@@ -1818,6 +2018,7 @@ def _dashboard_html() -> str:
       renderOverview(payload);
       renderRaceTable();
       bindEvents();
+      initCarParallax();
       renderRoute(routeFromHash());
       initScrollReveal();
       setTimeout(hideLoadingScreen, 1850);

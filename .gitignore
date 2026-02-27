@@ -27,3 +27,4 @@ site/.vercel/
 
 # OS
 .DS_Store
+.vercel

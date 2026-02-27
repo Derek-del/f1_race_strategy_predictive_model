@@ -112,7 +112,8 @@
 
     .loading-car {
       position: absolute;
-      left: -180px;
+      left: auto;
+      right: -200px;
       top: 14px;
       width: 180px;
       height: 58px;
@@ -191,6 +192,9 @@
       overflow: hidden;
       position: relative;
       animation: rise 560ms var(--ease) both;
+      min-height: calc(100vh - 74px);
+      display: grid;
+      align-items: center;
     }
 
     .hero::after {
@@ -218,9 +222,10 @@
     .hero-inner {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 28px;
-      padding: 36px;
-      align-items: start;
+      gap: 36px;
+      padding: clamp(52px, 8vw, 96px);
+      align-items: center;
+      align-content: center;
     }
 
     .hero-rail {
@@ -228,7 +233,7 @@
       align-items: flex-start;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 22px;
     }
 
     .brand {
@@ -253,7 +258,7 @@
     }
 
     .title {
-      margin: 0 0 12px 0;
+      margin: 0 0 20px 0;
       font-size: clamp(38px, 5.4vw, 72px);
       line-height: 1.02;
       font-weight: 700;
@@ -264,10 +269,11 @@
     }
 
     .sub {
-      margin: 0;
+      margin: 18px 0 0 0;
       color: var(--muted);
-      font-size: 16px;
-      line-height: 1.65;
+      font-size: 18px;
+      line-height: 1.7;
+      max-width: 860px;
     }
 
     .actions {
@@ -848,6 +854,16 @@
       letter-spacing: 0.02em;
     }
 
+    .race-when {
+      display: block;
+      margin-top: 3px;
+      color: #7f7f7f;
+      font-size: 11px;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
     .mono { font-family: "SFMono-Regular", Menlo, monospace; color: #bdbdbd; font-size: 12px; }
 
     .sim-grid {
@@ -1083,14 +1099,14 @@
     }
 
     @keyframes silhouetteBloom {
-      0% { transform: scale(0.9); opacity: 0.88; }
-      58% { transform: scale(1.28); opacity: 0.62; }
-      100% { transform: scale(1.12); opacity: 0.38; }
+      0% { transform: scale(0.9) translateX(0); opacity: 0.88; }
+      58% { transform: scale(1.28) translateX(-20px); opacity: 0.62; }
+      100% { transform: scale(1.12) translateX(-10px); opacity: 0.38; }
     }
 
     @keyframes silhouetteIdle {
-      0%, 100% { transform: scale(1.12) translateY(0); }
-      50% { transform: scale(1.14) translateY(-4px); }
+      0%, 100% { transform: scale(1.12) translateX(0) translateY(0); }
+      50% { transform: scale(1.14) translateX(-22px) translateY(-4px); }
     }
 
     @keyframes popIn {
@@ -1116,13 +1132,13 @@
 
     @keyframes roadMove {
       from { background-position-x: 0; }
-      to { background-position-x: -54px; }
+      to { background-position-x: 54px; }
     }
 
     @keyframes driveOff {
       0% { transform: translateX(0) scale(1); }
-      72% { transform: translateX(640px) scale(1); }
-      100% { transform: translateX(860px) scale(0.92); opacity: 0.72; }
+      72% { transform: translateX(-640px) scale(1); }
+      100% { transform: translateX(-860px) scale(0.92); opacity: 0.72; }
     }
 
     @keyframes drawerPulse {
@@ -1136,6 +1152,10 @@
     }
 
     @media (max-width: 980px) {
+      .hero {
+        min-height: 84vh;
+      }
+
       .hero-inner {
         grid-template-columns: 1fr;
       }
@@ -1191,6 +1211,10 @@
         padding: 16px;
       }
 
+      .hero {
+        min-height: 76vh;
+      }
+
       .landing,
       .hero-inner,
       .tabs-wrap {
@@ -1244,11 +1268,16 @@
   <div class="loading-screen" id="loadingScreen">
     <div class="loading-scene">
       <div class="loading-track" aria-hidden="true">
-        <svg class="loading-car" viewBox="0 0 260 80" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" fill="#0f1013"/>
-          <path d="M18 50C34 43 52 39 70 39H96L118 30H154L176 18H208L232 31H246C252 31 257 34 260 39L254 54H236L228 48H198L190 58H160L152 48H130L122 58H94L86 49H60L48 56H20L18 50Z" stroke="#f2f2f2" stroke-opacity="0.4"/>
-          <circle cx="104" cy="60" r="9" fill="#0b0c0f"/>
-          <circle cx="196" cy="60" r="9" fill="#0b0c0f"/>
+        <svg class="loading-car" viewBox="0 0 320 96" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 63L22 58L40 55H56L74 53L92 43H126L146 37H174L188 30H230L248 40H262L280 47L296 50L306 58L314 66H294L286 60H266L258 74H224L216 60H178L170 74H136L128 62H100L90 74H64L56 66H44L34 72H16L12 63Z" fill="#08090c"/>
+          <path d="M12 63L22 58L40 55H56L74 53L92 43H126L146 37H174L188 30H230L248 40H262L280 47L296 50L306 58L314 66H294L286 60H266L258 74H224L216 60H178L170 74H136L128 62H100L90 74H64L56 66H44L34 72H16L12 63Z" stroke="#e9e9e9" stroke-opacity="0.48"/>
+          <path d="M270 36H290V60H262L270 36Z" fill="#0a0b10"/>
+          <path d="M4 68H24L20 74H2L4 68Z" fill="#0a0b10"/>
+          <path d="M102 58C130 56 156 51 184 44C198 41 214 36 228 33" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.8" stroke-linecap="round"/>
+          <circle cx="90" cy="76" r="12" fill="#0a0b10"/>
+          <circle cx="228" cy="76" r="12" fill="#0a0b10"/>
+          <circle cx="90" cy="76" r="4.2" fill="#f2f2f2" fill-opacity="0.72"/>
+          <circle cx="228" cy="76" r="4.2" fill="#f2f2f2" fill-opacity="0.72"/>
         </svg>
       </div>
       <p class="loading-text">Preparing race strategy interface</p>
@@ -1256,21 +1285,23 @@
   </div>
 
   <div class="car-bg" aria-hidden="true">
-    <svg viewBox="0 0 1400 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 1500 460" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="carFill" x1="70" y1="120" x2="1260" y2="300" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#0b0c0f"/>
-          <stop offset="0.52" stop-color="#12141a"/>
-          <stop offset="1" stop-color="#07080b"/>
+        <linearGradient id="carFill" x1="62" y1="128" x2="1428" y2="330" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#0a0b0f"/>
+          <stop offset="0.5" stop-color="#141722"/>
+          <stop offset="1" stop-color="#07080c"/>
         </linearGradient>
       </defs>
-      <path d="M90 270C160 247 238 235 316 236H420L514 196H668L760 146H945L1048 198H1200C1236 199 1269 217 1287 247L1318 292H1214L1186 262H1016L980 304H816L780 262H572L540 304H386L356 264H214L162 294H84L90 270Z" fill="url(#carFill)"/>
-      <path d="M90 270C160 247 238 235 316 236H420L514 196H668L760 146H945L1048 198H1200C1236 199 1269 217 1287 247L1318 292H1214L1186 262H1016L980 304H816L780 262H572L540 304H386L356 264H214L162 294H84L90 270Z" stroke="#fbfbfb" stroke-opacity="0.24" stroke-width="2"/>
-      <path d="M360 252C488 244 610 230 724 206C800 190 872 174 944 156" stroke="#ffffff" stroke-opacity="0.22" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="470" cy="316" r="42" fill="#0b0c0f"/>
-      <circle cx="916" cy="316" r="42" fill="#0b0c0f"/>
-      <circle cx="470" cy="316" r="14" fill="#f7f7f7" fill-opacity="0.7"/>
-      <circle cx="916" cy="316" r="14" fill="#f7f7f7" fill-opacity="0.7"/>
+      <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" fill="url(#carFill)"/>
+      <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" stroke="#f8f8f8" stroke-opacity="0.28" stroke-width="2"/>
+      <path d="M1298 186H1384V262H1268L1298 186Z" fill="#090a0f"/>
+      <path d="M46 320H136L118 338H36L46 320Z" fill="#0a0b10"/>
+      <path d="M356 322C470 318 582 304 694 278C760 262 838 244 930 214" stroke="#ffffff" stroke-opacity="0.24" stroke-width="3" stroke-linecap="round"/>
+      <circle cx="420" cy="346" r="48" fill="#0b0c0f"/>
+      <circle cx="1080" cy="346" r="48" fill="#0b0c0f"/>
+      <circle cx="420" cy="346" r="15" fill="#f8f8f8" fill-opacity="0.72"/>
+      <circle cx="1080" cy="346" r="15" fill="#f8f8f8" fill-opacity="0.72"/>
     </svg>
   </div>
 
@@ -1457,8 +1488,8 @@
     const routes = ['overview', 'strategy'];
     const state = {
       payload: null,
-      sortKey: 'win_probability',
-      sortDir: 'desc',
+      sortKey: 'event_name',
+      sortDir: 'asc',
       filteredRows: []
     };
     let scrollObserver = null;
@@ -1472,30 +1503,30 @@
     }
 
     const ROUND_META_2025 = {
-      1: { name: 'Australian Grand Prix', location: 'Melbourne, Australia' },
-      2: { name: 'Chinese Grand Prix', location: 'Shanghai, China' },
-      3: { name: 'Japanese Grand Prix', location: 'Suzuka, Japan' },
-      4: { name: 'Bahrain Grand Prix', location: 'Sakhir, Bahrain' },
-      5: { name: 'Saudi Arabian Grand Prix', location: 'Jeddah, Saudi Arabia' },
-      6: { name: 'Miami Grand Prix', location: 'Miami, USA' },
-      7: { name: 'Emilia Romagna Grand Prix', location: 'Imola, Italy' },
-      8: { name: 'Monaco Grand Prix', location: 'Monte Carlo, Monaco' },
-      9: { name: 'Spanish Grand Prix', location: 'Barcelona, Spain' },
-      10: { name: 'Canadian Grand Prix', location: 'Montreal, Canada' },
-      11: { name: 'Austrian Grand Prix', location: 'Spielberg, Austria' },
-      12: { name: 'British Grand Prix', location: 'Silverstone, United Kingdom' },
-      13: { name: 'Belgian Grand Prix', location: 'Spa-Francorchamps, Belgium' },
-      14: { name: 'Hungarian Grand Prix', location: 'Budapest, Hungary' },
-      15: { name: 'Dutch Grand Prix', location: 'Zandvoort, Netherlands' },
-      16: { name: 'Italian Grand Prix', location: 'Monza, Italy' },
-      17: { name: 'Azerbaijan Grand Prix', location: 'Baku, Azerbaijan' },
-      18: { name: 'Singapore Grand Prix', location: 'Singapore' },
-      19: { name: 'United States Grand Prix', location: 'Austin, USA' },
-      20: { name: 'Mexico City Grand Prix', location: 'Mexico City, Mexico' },
-      21: { name: 'Sao Paulo Grand Prix', location: 'Sao Paulo, Brazil' },
-      22: { name: 'Las Vegas Grand Prix', location: 'Las Vegas, USA' },
-      23: { name: 'Qatar Grand Prix', location: 'Lusail, Qatar' },
-      24: { name: 'Abu Dhabi Grand Prix', location: 'Yas Marina, UAE' }
+      1: { round: 1, name: 'Australian Grand Prix', location: 'Melbourne, Australia', when: 'Mar 16, 2025' },
+      2: { round: 2, name: 'Chinese Grand Prix', location: 'Shanghai, China', when: 'Mar 23, 2025' },
+      3: { round: 3, name: 'Japanese Grand Prix', location: 'Suzuka, Japan', when: 'Apr 6, 2025' },
+      4: { round: 4, name: 'Bahrain Grand Prix', location: 'Sakhir, Bahrain', when: 'Apr 13, 2025' },
+      5: { round: 5, name: 'Saudi Arabian Grand Prix', location: 'Jeddah, Saudi Arabia', when: 'Apr 20, 2025' },
+      6: { round: 6, name: 'Miami Grand Prix', location: 'Miami, USA', when: 'May 4, 2025' },
+      7: { round: 7, name: 'Emilia Romagna Grand Prix', location: 'Imola, Italy', when: 'May 18, 2025' },
+      8: { round: 8, name: 'Monaco Grand Prix', location: 'Monte Carlo, Monaco', when: 'May 25, 2025' },
+      9: { round: 9, name: 'Spanish Grand Prix', location: 'Barcelona, Spain', when: 'Jun 1, 2025' },
+      10: { round: 10, name: 'Canadian Grand Prix', location: 'Montreal, Canada', when: 'Jun 15, 2025' },
+      11: { round: 11, name: 'Austrian Grand Prix', location: 'Spielberg, Austria', when: 'Jun 29, 2025' },
+      12: { round: 12, name: 'British Grand Prix', location: 'Silverstone, United Kingdom', when: 'Jul 6, 2025' },
+      13: { round: 13, name: 'Belgian Grand Prix', location: 'Spa-Francorchamps, Belgium', when: 'Jul 27, 2025' },
+      14: { round: 14, name: 'Hungarian Grand Prix', location: 'Budapest, Hungary', when: 'Aug 3, 2025' },
+      15: { round: 15, name: 'Dutch Grand Prix', location: 'Zandvoort, Netherlands', when: 'Aug 31, 2025' },
+      16: { round: 16, name: 'Italian Grand Prix', location: 'Monza, Italy', when: 'Sep 7, 2025' },
+      17: { round: 17, name: 'Azerbaijan Grand Prix', location: 'Baku, Azerbaijan', when: 'Sep 21, 2025' },
+      18: { round: 18, name: 'Singapore Grand Prix', location: 'Singapore', when: 'Oct 5, 2025' },
+      19: { round: 19, name: 'United States Grand Prix', location: 'Austin, USA', when: 'Oct 19, 2025' },
+      20: { round: 20, name: 'Mexico City Grand Prix', location: 'Mexico City, Mexico', when: 'Oct 26, 2025' },
+      21: { round: 21, name: 'Sao Paulo Grand Prix', location: 'Sao Paulo, Brazil', when: 'Nov 9, 2025' },
+      22: { round: 22, name: 'Las Vegas Grand Prix', location: 'Las Vegas, USA', when: 'Nov 22, 2025' },
+      23: { round: 23, name: 'Qatar Grand Prix', location: 'Lusail, Qatar', when: 'Nov 30, 2025' },
+      24: { round: 24, name: 'Abu Dhabi Grand Prix', location: 'Yas Marina, UAE', when: 'Dec 7, 2025' }
     };
 
     function resolveRaceMeta(row) {
@@ -1510,8 +1541,10 @@
         if (meta.name.toLowerCase() === rawName.toLowerCase()) return meta;
       }
       return {
+        round: Number.POSITIVE_INFINITY,
         name: rawName,
-        location: safeText(row.location || row.circuit_location || row.country || '-')
+        location: safeText(row.location || row.circuit_location || row.country || '-'),
+        when: safeText(row.event_date || row.date || row.race_date || row.weekend_date || '-')
       };
     }
 
@@ -1706,9 +1739,12 @@
 
     function compare(a, b, key) {
       if (key === 'event_name') {
-        const aname = resolveRaceMeta(a).name;
-        const bname = resolveRaceMeta(b).name;
-        return aname.localeCompare(bname);
+        const ameta = resolveRaceMeta(a);
+        const bmeta = resolveRaceMeta(b);
+        const around = Number(ameta.round ?? Number.POSITIVE_INFINITY);
+        const bround = Number(bmeta.round ?? Number.POSITIVE_INFINITY);
+        if (around !== bround) return around - bround;
+        return ameta.name.localeCompare(bmeta.name);
       }
       const av = a[key];
       const bv = b[key];
@@ -1725,7 +1761,7 @@
       const minWin = Number(document.getElementById('minWin').value || 0);
       const out = rows.filter(r => {
         const race = resolveRaceMeta(r);
-        const blob = `${safeText(race.name)} ${safeText(race.location)} ${safeText(r.best_strategy)} ${safeText(r.strategy_plan)} ${safeText(r.compounds)} ${safeText(r.fallback_2_plan)} ${safeText(r.fallback_3_plan)} ${safeText(r.fallback_2_trigger)} ${safeText(r.fallback_3_trigger)}`.toLowerCase();
+        const blob = `${safeText(race.name)} ${safeText(race.location)} ${safeText(race.when)} ${safeText(r.best_strategy)} ${safeText(r.strategy_plan)} ${safeText(r.compounds)} ${safeText(r.fallback_2_plan)} ${safeText(r.fallback_3_plan)} ${safeText(r.fallback_2_trigger)} ${safeText(r.fallback_3_trigger)}`.toLowerCase();
         const okSearch = !search || blob.includes(search);
         const okStop = stop === 'all' || String(Math.round(Number(r.stops || 0))) === stop;
         const okWin = Number(r.win_probability || 0) >= minWin;
@@ -1750,7 +1786,7 @@
         tr.style.setProperty('--delay', `${Math.min(i * 12, 240)}ms`);
         tr.dataset.index = String(i);
         tr.innerHTML = `
-          <td><span class='race-main'>${safeText(race.name)}</span><span class='race-location'>${safeText(race.location)}</span></td>
+          <td><span class='race-main'>${safeText(race.name)}</span><span class='race-location'>${safeText(race.location)}</span><span class='race-when'>${safeText(race.when)}</span></td>
           <td>${safeText(r.strategy_plan || r.best_strategy)}</td>
           <td>${fmt(r.stops, 0)}</td>
           <td>${safeText(r.start_compound || '-')}</td>
@@ -1777,6 +1813,7 @@
       const body = document.getElementById('drawerBody');
       body.innerHTML = `
         <div>
+          <span class='tag'>${safeText(race.when)}</span>
           <span class='tag'>${safeText(race.location)}</span>
           <span class='tag'>${safeText(row.team)}</span>
           <span class='tag'>${safeText(row.driver)}</span>

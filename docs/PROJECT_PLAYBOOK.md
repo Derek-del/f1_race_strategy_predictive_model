@@ -1,7 +1,7 @@
 # Project Playbook: F1 ML + CV Strategy Engine (2025, McLaren)
 
 ## Objective
-Build a race strategy system that predicts race pace and chooses pit/tire strategy to maximize championship points across the 2025 season.
+Build a race strategy system that predicts race pace and chooses pit/tire strategy to maximize title-winning probability across the 2025 season.
 
 ## Inputs
 - Practice and qualifying lap/session data (FastF1).
@@ -11,7 +11,7 @@ Build a race strategy system that predicts race pace and chooses pit/tire strate
 
 ## Core outputs
 - Best strategy per race (`strategy_recommendations_2025.csv`).
-- Projected driver and constructors outcomes (`championship_projection_2025.json`).
+- Projected driver and constructors title probabilities (`championship_projection_2025.json`).
 - Model quality metrics (`model_metrics.json`).
 
 ## Pipeline flow
@@ -20,14 +20,14 @@ Build a race strategy system that predicts race pace and chooses pit/tire strate
 3. Train race-pace model.
 4. Add CV-derived track-state features.
 5. Simulate candidate strategies under uncertainty.
-6. Select strategy maximizing expected points and robustness.
+6. Select primary strategy and contingency backups maximizing score and robustness.
 7. Aggregate season championship projection.
 
 ## Model and optimization details
 - Pace model: gradient boosting regressor with mixed feature preprocessing.
 - Candidate generation: one-stop and two-stop compound sequences.
 - Simulator: Monte Carlo race time and points outcomes with traffic/weather/safety-car stochasticity.
-- Selection objective: expected points penalized by robustness window.
+- Selection objective: strategy score and robustness across baseline + contingency scenarios.
 
 ## Validation approach
 - Unit tests for model training/prediction and simulator behavior.

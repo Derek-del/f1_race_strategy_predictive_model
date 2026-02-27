@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pandas as pd
+
 from f1_strategy_lab.config.settings import load_config
 from f1_strategy_lab.pipeline import run_season_pipeline
 
@@ -19,5 +21,12 @@ def test_pipeline_runs_with_synthetic_fallback(tmp_path: Path) -> None:
 
     assert summary["training_rows"] > 0
     assert summary["inference_rows"] > 0
-    assert Path(summary["outputs"]["strategy_recommendations"]).exists()
+    rec_path = Path(summary["outputs"]["strategy_recommendations"])
+    assert rec_path.exists()
     assert Path(summary["outputs"]["championship_projection"]).exists()
+
+    rec_df = pd.read_csv(rec_path)
+    assert {"fallback_2_strategy", "fallback_3_strategy", "strategy_plan", "start_compound"}.issubset(
+        rec_df.columns
+    )
+    assert "expected_points" not in rec_df.columns

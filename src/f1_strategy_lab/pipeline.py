@@ -11,9 +11,14 @@ from f1_strategy_lab.cv.track_state import load_cv_features_from_directory
 from f1_strategy_lab.data.fastf1_pipeline import build_prerace_dataset, build_training_dataset
 from f1_strategy_lab.data.synthetic import synthetic_training_data
 from f1_strategy_lab.features.feature_builder import align_inference_features, prepare_feature_set
+from f1_strategy_lab.models.contingency_ranker import ContingencyRanker
 from f1_strategy_lab.models.pace_model import PaceModel
 from f1_strategy_lab.strategy.championship import project_championship
-from f1_strategy_lab.strategy.simulator import evaluate_strategies, generate_candidate_strategies
+from f1_strategy_lab.strategy.contingency import (
+    contingency_reason_from_row,
+    evaluate_strategies_with_contingencies,
+)
+from f1_strategy_lab.strategy.simulator import generate_candidate_strategies
 from f1_strategy_lab.utils.io import ensure_dir, save_json
 
 
@@ -59,6 +64,54 @@ def _pick(row: pd.Series, options: list[str], fallback: float) -> float:
         if col in row and pd.notna(row[col]):
             return float(row[col])
     return fallback
+
+
+def _parse_compounds(compounds: str) -> list[str]:
+    return [c.strip() for c in str(compounds).split("->") if c.strip()]
+
+
+def _parse_pit_laps(pit_laps: str) -> list[int]:
+    out: list[int] = []
+    for x in str(pit_laps).split(","):
+        x = x.strip()
+        if not x:
+            continue
+        try:
+            out.append(int(x))
+        except ValueError:
+            continue
+    return out
+
+
+def _plan_text(compounds: str, pit_laps: str) -> str:
+    c = _parse_compounds(compounds)
+    pits = _parse_pit_laps(pit_laps)
+    if not c:
+        return "No strategy data"
+    if not pits:
+        return f"Start on {c[0]} and run full race (0 planned stops)"
+
+    steps: list[str] = [f"Start on {c[0]}"]
+    for i, pit in enumerate(pits):
+        next_compound = c[min(i + 1, len(c) - 1)]
+        steps.append(f"Pit on lap {pit} -> {next_compound}")
+    return "; ".join(steps)
+
+
+def _fallback_payload(row: pd.Series, prefix: str) -> dict[str, Any]:
+    compounds = str(row.get("compounds", ""))
+    pits = str(row.get("pit_laps", ""))
+    start_compound = _parse_compounds(compounds)[0] if _parse_compounds(compounds) else ""
+    first_pit = _parse_pit_laps(pits)[0] if _parse_pit_laps(pits) else None
+    return {
+        f"{prefix}_strategy": str(row.get("strategy", "")),
+        f"{prefix}_stops": int(row.get("stops", 0)),
+        f"{prefix}_start_compound": start_compound,
+        f"{prefix}_pit_laps": pits,
+        f"{prefix}_first_pit_lap": first_pit,
+        f"{prefix}_plan": _plan_text(compounds, pits),
+        f"{prefix}_trigger": contingency_reason_from_row(row),
+    }
 
 
 def _load_cv_features(videos_dir: str | None, cfg: ProjectConfig) -> dict[str, dict[str, float]]:
@@ -171,7 +224,7 @@ def run_season_pipeline(
         rain_idx = min(2.0, cv_rain + weather_rain / 5.0)
 
         candidates = generate_candidate_strategies(total_laps=total_laps, compounds=cfg.strategy.compounds)
-        evaluated = evaluate_strategies(
+        contingency_table = evaluate_strategies_with_contingencies(
             candidates=candidates,
             total_laps=total_laps,
             base_lap_time=base_lap_time,
@@ -183,25 +236,72 @@ def run_season_pipeline(
             random_state=cfg.model.random_state + idx,
         )
 
-        best = evaluated.iloc[0]
-        recommendations.append(
-            {
-                "year": int(row.get("year", cfg.target_year)),
-                "event_name": str(row.get("event_name", f"Round_{idx+1:02d}")),
-                "team": cfg.team,
-                "driver": cfg.target_driver,
-                "predicted_base_lap_sec": round(base_lap_time, 3),
-                "best_strategy": str(best["strategy"]),
-                "compounds": str(best["compounds"]),
-                "pit_laps": str(best["pit_laps"]),
-                "stops": int(best["stops"]),
-                "expected_race_time": round(float(best["expected_race_time"]), 3),
-                "win_probability": round(float(best["win_probability"]), 4),
-                "expected_points": round(float(best["expected_points"]), 3),
-                "strategy_score": round(float(best["strategy_score"]), 3),
-                "robustness_window": round(float(best["robustness_window"]), 3),
-            }
-        )
+        baseline_ranked = contingency_table.sort_values(
+            by=["baseline_strategy_score", "baseline_expected_race_time"],
+            ascending=[False, True],
+        ).reset_index(drop=True)
+        best = baseline_ranked.iloc[0]
+
+        ranker = ContingencyRanker(random_state=cfg.model.random_state + idx)
+        ranked = ranker.rank(contingency_table).ranked
+        fallback_rows = ranked[ranked["strategy"].astype(str) != str(best["strategy"])].head(2)
+        if len(fallback_rows) < 2:
+            extra = baseline_ranked[
+                ~baseline_ranked["strategy"].astype(str).isin(
+                    [str(best["strategy"])] + fallback_rows["strategy"].astype(str).tolist()
+                )
+            ].head(2 - len(fallback_rows))
+            fallback_rows = pd.concat([fallback_rows, extra], ignore_index=True)
+
+        rec: dict[str, Any] = {
+            "year": int(row.get("year", cfg.target_year)),
+            "event_name": str(row.get("event_name", f"Round_{idx+1:02d}")),
+            "team": cfg.team,
+            "driver": cfg.target_driver,
+            "predicted_base_lap_sec": round(base_lap_time, 3),
+            "best_strategy": str(best["strategy"]),
+            "compounds": str(best["compounds"]),
+            "pit_laps": str(best["pit_laps"]),
+            "stops": int(best["stops"]),
+            "start_compound": _parse_compounds(str(best["compounds"]))[0] if _parse_compounds(str(best["compounds"])) else "",
+            "first_pit_lap": (_parse_pit_laps(str(best["pit_laps"]))[0] if _parse_pit_laps(str(best["pit_laps"])) else None),
+            "strategy_plan": _plan_text(str(best["compounds"]), str(best["pit_laps"])),
+            "expected_race_time": round(float(best["baseline_expected_race_time"]), 3),
+            "win_probability": round(float(best["baseline_win_probability"]), 4),
+            "strategy_score": round(float(best["baseline_strategy_score"]), 3),
+            "robustness_window": round(float(best["baseline_robustness_window"]), 3),
+        }
+
+        if len(fallback_rows) >= 1:
+            rec.update(_fallback_payload(fallback_rows.iloc[0], "fallback_2"))
+        else:
+            rec.update(
+                {
+                    "fallback_2_strategy": "",
+                    "fallback_2_stops": 0,
+                    "fallback_2_start_compound": "",
+                    "fallback_2_pit_laps": "",
+                    "fallback_2_first_pit_lap": None,
+                    "fallback_2_plan": "",
+                    "fallback_2_trigger": "",
+                }
+            )
+        if len(fallback_rows) >= 2:
+            rec.update(_fallback_payload(fallback_rows.iloc[1], "fallback_3"))
+        else:
+            rec.update(
+                {
+                    "fallback_3_strategy": "",
+                    "fallback_3_stops": 0,
+                    "fallback_3_start_compound": "",
+                    "fallback_3_pit_laps": "",
+                    "fallback_3_first_pit_lap": None,
+                    "fallback_3_plan": "",
+                    "fallback_3_trigger": "",
+                }
+            )
+
+        recommendations.append(rec)
 
     rec_df = pd.DataFrame(recommendations)
     rec_df.to_csv(reports_dir / f"strategy_recommendations_{cfg.target_year}.csv", index=False)

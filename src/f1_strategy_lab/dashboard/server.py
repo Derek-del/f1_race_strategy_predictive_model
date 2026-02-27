@@ -13,9 +13,13 @@ from f1_strategy_lab.utils.io import load_json
 NUMERIC_FIELDS = {
     "predicted_base_lap_sec",
     "stops",
+    "first_pit_lap",
+    "fallback_2_stops",
+    "fallback_2_first_pit_lap",
+    "fallback_3_stops",
+    "fallback_3_first_pit_lap",
     "expected_race_time",
     "win_probability",
-    "expected_points",
     "strategy_score",
     "robustness_window",
     "year",
@@ -90,8 +94,6 @@ def _build_kpis(summary: dict[str, Any], championship: dict[str, Any]) -> dict[s
         "mae": metrics.get("mae"),
         "rmse": metrics.get("rmse"),
         "r2": metrics.get("r2"),
-        "projected_driver_points": championship.get("projected_driver_points"),
-        "projected_constructors_points": championship.get("projected_constructors_points"),
         "driver_title_probability": championship.get("driver_title_probability"),
         "constructors_title_probability": championship.get("constructors_title_probability"),
     }
@@ -101,7 +103,7 @@ def _top_rounds(rows: list[dict[str, Any]], limit: int = 5) -> list[dict[str, An
     ordered = sorted(
         rows,
         key=lambda r: (
-            float(r.get("expected_points") or 0.0),
+            float(r.get("strategy_score") or 0.0),
             float(r.get("win_probability") or 0.0),
         ),
         reverse=True,
@@ -163,6 +165,11 @@ def build_dashboard_payload(
 
     rows = _read_strategy_rows(strategy_path)
     championship = load_json(championship_path) or {}
+    # Backward compatibility: strip deprecated championship point projections.
+    if isinstance(championship, dict):
+        championship.pop("projected_driver_points", None)
+        championship.pop("projected_teammate_points", None)
+        championship.pop("projected_constructors_points", None)
 
     payload = {
         "source": {
@@ -217,7 +224,7 @@ def _dashboard_html() -> str:
     body {
       margin: 0;
       padding: 22px;
-      font-family: "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Roboto", Helvetica, Arial, sans-serif;
+      font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--ink);
       background:
         radial-gradient(circle at 8% -10%, rgba(94,161,255,0.22) 0%, transparent 34%),
@@ -787,7 +794,7 @@ def _dashboard_html() -> str:
             <svg class="spark" id="pointsSpark" viewBox="0 0 600 90" preserveAspectRatio="none"></svg>
           </div>
           <div class="panel">
-            <h3>Top Rounds by Expected Points</h3>
+            <h3>Top Rounds by Strategy Score</h3>
             <div id="topRounds"></div>
           </div>
         </section>
@@ -809,8 +816,8 @@ def _dashboard_html() -> str:
               </select>
             </div>
             <div class="field">
-              <label for="minPoints">Min expected points</label>
-              <input id="minPoints" type="range" min="0" max="26" step="0.1" value="0" />
+              <label for="minWin">Min win probability</label>
+              <input id="minWin" type="range" min="0" max="1" step="0.01" value="0" />
             </div>
             <div>
               <button class="btn warn" id="resetFilters">Reset</button>
@@ -828,10 +835,10 @@ def _dashboard_html() -> str:
               <thead>
                 <tr>
                   <th><button class="th-btn" data-sort="event_name">Event</button></th>
-                  <th><button class="th-btn" data-sort="best_strategy">Strategy</button></th>
-                  <th>Compounds</th>
+                  <th><button class="th-btn" data-sort="strategy_plan">Primary Race Plan</button></th>
                   <th><button class="th-btn" data-sort="stops">Stops</button></th>
-                  <th><button class="th-btn" data-sort="expected_points">Exp Pts</button></th>
+                  <th>Start Tyre</th>
+                  <th>First Pit</th>
                   <th><button class="th-btn" data-sort="win_probability">Win Prob</button></th>
                   <th><button class="th-btn" data-sort="strategy_score">Score</button></th>
                 </tr>
@@ -846,16 +853,16 @@ def _dashboard_html() -> str:
         <section class="sim-grid">
           <div class="panel">
             <h3>Interactive Championship What-If</h3>
-            <p class="sub">Adjust points assumptions to simulate alternate season outcomes.</p>
+            <p class="sub">Adjust form assumptions to simulate alternate title-probability outcomes.</p>
             <div class="sim-row">
-              <label for="driverDelta">Driver points adjustment: <strong id="driverDeltaValue">0</strong></label>
-              <input id="driverDelta" type="range" min="-80" max="80" step="1" value="0" />
+              <label for="driverDelta">Driver form adjustment: <strong id="driverDeltaValue">0 pp</strong></label>
+              <input id="driverDelta" type="range" min="-30" max="30" step="1" value="0" />
             </div>
             <div class="sim-row">
-              <label for="teammateFactor">Teammate multiplier: <strong id="teammateFactorValue">0.95x</strong></label>
-              <input id="teammateFactor" type="range" min="0.6" max="1.2" step="0.01" value="0.95" />
+              <label for="teammateFactor">Team synergy adjustment: <strong id="teammateFactorValue">0 pp</strong></label>
+              <input id="teammateFactor" type="range" min="-30" max="30" step="1" value="0" />
             </div>
-            <p class="hint">Model: title probabilities use the same logistic calibration used in pipeline logic.</p>
+            <p class="hint">Adjustments are in percentage points of title confidence (pp).</p>
           </div>
           <div class="panel">
             <h3>Projected Outcome</h3>
@@ -894,7 +901,7 @@ def _dashboard_html() -> str:
     const routes = ['overview', 'races', 'simulator', 'integrity'];
     const state = {
       payload: null,
-      sortKey: 'expected_points',
+      sortKey: 'strategy_score',
       sortDir: 'desc',
       filteredRows: []
     };
@@ -902,6 +909,7 @@ def _dashboard_html() -> str:
     const fmt = (v, n=3) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : Number(v).toFixed(n);
     const pct = (v) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : `${(Number(v) * 100).toFixed(1)}%`;
     const sigmoid = (x) => 1 / (1 + Math.exp(-x));
+    const logit = (p) => Math.log(p / (1 - p));
     const clamp = (x, a, b) => Math.min(Math.max(x, a), b);
     const supportsViewTransition = typeof document.startViewTransition === 'function';
 
@@ -971,10 +979,10 @@ def _dashboard_html() -> str:
       const defs = [
         ['Training Rows', k.training_rows ?? '-'],
         ['Inference Rows', k.inference_rows ?? '-'],
+        ['MAE', fmt(k.mae, 3)],
         ['RMSE', fmt(k.rmse, 3)],
-        ['Driver Points', fmt(k.projected_driver_points, 1)],
-        ['Constructors Points', fmt(k.projected_constructors_points, 1)],
-        ['Driver Title Prob', pct(k.driver_title_probability)]
+        ['Driver Title Prob', pct(k.driver_title_probability)],
+        ['Constructors Title Prob', pct(k.constructors_title_probability)]
       ];
       defs.forEach((d, i) => cards.appendChild(createCard(d[0], d[1], i)));
 
@@ -997,9 +1005,9 @@ def _dashboard_html() -> str:
       const top = document.getElementById('topRounds');
       top.innerHTML = '';
       const topRows = payload.top_rounds || [];
-      const maxPts = Math.max(...topRows.map(r => Number(r.expected_points || 0)), 1);
+      const maxPts = Math.max(...topRows.map(r => Number(r.strategy_score || 0)), 1);
       topRows.forEach((r, i) => {
-        const val = Number(r.expected_points || 0);
+        const val = Number(r.strategy_score || 0);
         const width = Math.max(3, Math.round((val / maxPts) * 100));
         const row = document.createElement('div');
         row.className = 'bar-row reveal';
@@ -1007,7 +1015,7 @@ def _dashboard_html() -> str:
         row.innerHTML = `
           <span>${safeText(r.event_name)}</span>
           <div class='bar'><span data-width='${width}%'></span></div>
-          <span>${fmt(val, 2)}</span>
+          <span>${fmt(val, 3)}</span>
         `;
         top.appendChild(row);
         const fill = row.querySelector('span[data-width]');
@@ -1023,7 +1031,7 @@ def _dashboard_html() -> str:
         svg.innerHTML = '';
         return;
       }
-      const pts = rows.map(r => Number(r.expected_points || 0));
+      const pts = rows.map(r => Number(r.strategy_score || 0));
       const min = Math.min(...pts);
       const max = Math.max(...pts);
       const span = (max - min) || 1;
@@ -1063,13 +1071,13 @@ def _dashboard_html() -> str:
       const rows = state.payload.strategy_rows || [];
       const search = document.getElementById('searchInput').value.trim().toLowerCase();
       const stop = document.getElementById('stopFilter').value;
-      const minPts = Number(document.getElementById('minPoints').value || 0);
+      const minWin = Number(document.getElementById('minWin').value || 0);
       const out = rows.filter(r => {
-        const blob = `${safeText(r.event_name)} ${safeText(r.best_strategy)} ${safeText(r.compounds)}`.toLowerCase();
+        const blob = `${safeText(r.event_name)} ${safeText(r.best_strategy)} ${safeText(r.strategy_plan)} ${safeText(r.compounds)} ${safeText(r.fallback_2_plan)} ${safeText(r.fallback_3_plan)} ${safeText(r.fallback_2_trigger)} ${safeText(r.fallback_3_trigger)}`.toLowerCase();
         const okSearch = !search || blob.includes(search);
         const okStop = stop === 'all' || String(Math.round(Number(r.stops || 0))) === stop;
-        const okPts = Number(r.expected_points || 0) >= minPts;
-        return okSearch && okStop && okPts;
+        const okWin = Number(r.win_probability || 0) >= minWin;
+        return okSearch && okStop && okWin;
       });
       out.sort((a, b) => {
         const base = compare(a, b, state.sortKey);
@@ -1090,20 +1098,20 @@ def _dashboard_html() -> str:
         tr.dataset.index = String(i);
         tr.innerHTML = `
           <td>${safeText(r.event_name)}</td>
-          <td class='mono'>${safeText(r.best_strategy)}</td>
-          <td>${safeText(r.compounds)}</td>
+          <td>${safeText(r.strategy_plan || r.best_strategy)}</td>
           <td>${fmt(r.stops, 0)}</td>
-          <td>${fmt(r.expected_points, 2)}</td>
+          <td>${safeText(r.start_compound || '-')}</td>
+          <td>${r.first_pit_lap == null ? '-' : `L${fmt(r.first_pit_lap, 0)}`}</td>
           <td>${pct(r.win_probability)}</td>
           <td>${fmt(r.strategy_score, 2)}</td>
         `;
         body.appendChild(tr);
       });
       document.getElementById('tableCount').textContent = `${rows.length} rows`;
-      const minPoints = Number(document.getElementById('minPoints').value || 0);
+      const minWin = Number(document.getElementById('minWin').value || 0);
       const stop = document.getElementById('stopFilter').value;
       const parts = [];
-      if (minPoints > 0) parts.push(`min pts ${fmt(minPoints, 1)}`);
+      if (minWin > 0) parts.push(`min win ${pct(minWin)}`);
       if (stop !== 'all') parts.push(`${stop} stop`);
       if (document.getElementById('searchInput').value.trim()) parts.push('search active');
       document.getElementById('filterState').textContent = parts.length ? parts.join(' | ') : 'No filters active.';
@@ -1117,17 +1125,21 @@ def _dashboard_html() -> str:
         <div>
           <span class='tag'>${safeText(row.team)}</span>
           <span class='tag'>${safeText(row.driver)}</span>
-          <span class='tag'>${safeText(row.compounds)}</span>
+          <span class='tag'>${safeText(row.start_compound || row.compounds)}</span>
         </div>
         <div class='drawer-grid'>
           <div class='kv'><p class='k'>Best Strategy</p><p class='v mono'>${safeText(row.best_strategy)}</p></div>
+          <div class='kv'><p class='k'>Primary Plan</p><p class='v'>${safeText(row.strategy_plan)}</p></div>
           <div class='kv'><p class='k'>Pit Laps</p><p class='v'>${safeText(row.pit_laps)}</p></div>
-          <div class='kv'><p class='k'>Expected Points</p><p class='v'>${fmt(row.expected_points, 2)}</p></div>
           <div class='kv'><p class='k'>Win Probability</p><p class='v'>${pct(row.win_probability)}</p></div>
           <div class='kv'><p class='k'>Strategy Score</p><p class='v'>${fmt(row.strategy_score, 2)}</p></div>
           <div class='kv'><p class='k'>Robustness Window</p><p class='v'>${fmt(row.robustness_window, 2)}s</p></div>
           <div class='kv'><p class='k'>Expected Race Time</p><p class='v'>${fmt(row.expected_race_time, 2)}s</p></div>
           <div class='kv'><p class='k'>Pred Base Lap</p><p class='v'>${fmt(row.predicted_base_lap_sec, 3)}s</p></div>
+          <div class='kv'><p class='k'>Fallback #2</p><p class='v'>${safeText(row.fallback_2_plan || row.fallback_2_strategy)}</p></div>
+          <div class='kv'><p class='k'>Fallback #2 Trigger</p><p class='v'>${safeText(row.fallback_2_trigger)}</p></div>
+          <div class='kv'><p class='k'>Fallback #3</p><p class='v'>${safeText(row.fallback_3_plan || row.fallback_3_strategy)}</p></div>
+          <div class='kv'><p class='k'>Fallback #3 Trigger</p><p class='v'>${safeText(row.fallback_3_trigger)}</p></div>
         </div>
       `;
       document.getElementById('drawerBackdrop').classList.add('show');
@@ -1141,25 +1153,25 @@ def _dashboard_html() -> str:
 
     function renderSimulator() {
       const champ = state.payload.championship || {};
-      const baseDriver = Number(champ.projected_driver_points || 0);
-      const delta = Number(document.getElementById('driverDelta').value || 0);
-      const teamFactor = Number(document.getElementById('teammateFactor').value || 0.95);
-      const driver = clamp(baseDriver + delta, 0, 1200);
-      const teammate = clamp(driver * teamFactor, 0, 1200);
-      const constructors = driver + teammate;
-      const dProb = sigmoid((driver - 360) / 28);
-      const cProb = sigmoid((constructors - 620) / 38);
+      const baseDriverProb = clamp(Number(champ.driver_title_probability || 0), 0.001, 0.999);
+      const baseConstructorsProb = clamp(Number(champ.constructors_title_probability || 0), 0.001, 0.999);
+      const driverDeltaPP = Number(document.getElementById('driverDelta').value || 0);
+      const teamDeltaPP = Number(document.getElementById('teammateFactor').value || 0);
 
-      document.getElementById('driverDeltaValue').textContent = `${delta > 0 ? '+' : ''}${delta}`;
-      document.getElementById('teammateFactorValue').textContent = `${teamFactor.toFixed(2)}x`;
+      const driverProb = sigmoid(logit(baseDriverProb) + driverDeltaPP / 9.5);
+      const constructorsProb = sigmoid(logit(baseConstructorsProb) + (driverDeltaPP + teamDeltaPP) / 11.0);
+      const titleStrength = (driverProb * 0.55 + constructorsProb * 0.45) * 100.0;
+
+      document.getElementById('driverDeltaValue').textContent = `${driverDeltaPP > 0 ? '+' : ''}${driverDeltaPP} pp`;
+      document.getElementById('teammateFactorValue').textContent = `${teamDeltaPP > 0 ? '+' : ''}${teamDeltaPP} pp`;
 
       const sim = document.getElementById('simMetrics');
       sim.innerHTML = `
-        <div class='sim-metric'><span>Driver points</span><strong>${fmt(driver, 1)}</strong></div>
-        <div class='sim-metric'><span>Teammate points</span><strong>${fmt(teammate, 1)}</strong></div>
-        <div class='sim-metric'><span>Constructors points</span><strong>${fmt(constructors, 1)}</strong></div>
-        <div class='sim-metric'><span>Driver title probability</span><strong>${pct(dProb)}</strong></div>
-        <div class='sim-metric'><span>Constructors title probability</span><strong>${pct(cProb)}</strong></div>
+        <div class='sim-metric'><span>Baseline driver title probability</span><strong>${pct(baseDriverProb)}</strong></div>
+        <div class='sim-metric'><span>Baseline constructors title probability</span><strong>${pct(baseConstructorsProb)}</strong></div>
+        <div class='sim-metric'><span>Scenario driver title probability</span><strong>${pct(driverProb)}</strong></div>
+        <div class='sim-metric'><span>Scenario constructors title probability</span><strong>${pct(constructorsProb)}</strong></div>
+        <div class='sim-metric'><span>Combined title strength index</span><strong>${fmt(titleStrength, 1)}</strong></div>
       `;
     }
 
@@ -1249,11 +1261,11 @@ def _dashboard_html() -> str:
 
       document.getElementById('searchInput').addEventListener('input', renderRaceTable);
       document.getElementById('stopFilter').addEventListener('change', renderRaceTable);
-      document.getElementById('minPoints').addEventListener('input', renderRaceTable);
+      document.getElementById('minWin').addEventListener('input', renderRaceTable);
       document.getElementById('resetFilters').addEventListener('click', () => {
         document.getElementById('searchInput').value = '';
         document.getElementById('stopFilter').value = 'all';
-        document.getElementById('minPoints').value = '0';
+        document.getElementById('minWin').value = '0';
         renderRaceTable();
       });
       document.querySelector('thead').addEventListener('click', (event) => {

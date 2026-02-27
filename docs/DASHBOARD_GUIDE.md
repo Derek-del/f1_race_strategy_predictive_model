@@ -46,9 +46,9 @@ python scripts/run_locked_dashboard.py --lock-root reports/locks --port 9000
 ## What is shown
 
 - Run metadata (locked/reports mode, source path, timestamp)
-- KPI cards (rows, error metrics, title/points projections)
+- KPI cards (rows, error metrics, title probabilities)
 - Round validation status (if lock manifest exists)
-- Top rounds by expected points
+- Top rounds by strategy score
 - Full strategy recommendation table with quick filter, sorting, and row drill-down drawer
 - Championship what-if simulator (interactive sliders)
 - Manifest checksum list with copy-to-clipboard

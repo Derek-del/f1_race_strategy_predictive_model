@@ -9,17 +9,16 @@ from f1_strategy_lab.dashboard.server import build_dashboard_payload
 def _write_basic_run(run_dir: Path) -> None:
     run_dir.mkdir(parents=True, exist_ok=True)
     (run_dir / "strategy_recommendations_2025.csv").write_text(
-        "year,event_name,team,driver,predicted_base_lap_sec,best_strategy,compounds,pit_laps,stops,expected_race_time,win_probability,expected_points,strategy_score,robustness_window\n"
-        "2025,Bahrain Grand Prix,MCLAREN,NOR,90.1,ONE_STOP_MEDIUM_HARD_L31,MEDIUM->HARD,31,1,5120.2,0.34,18.5,18.1,14.2\n"
+        "year,event_name,team,driver,predicted_base_lap_sec,best_strategy,compounds,pit_laps,stops,start_compound,first_pit_lap,strategy_plan,expected_race_time,win_probability,strategy_score,robustness_window,fallback_2_strategy,fallback_2_plan,fallback_2_trigger,fallback_3_strategy,fallback_3_plan,fallback_3_trigger\n"
+        "2025,Bahrain Grand Prix,MCLAREN,NOR,90.1,ONE_STOP_MEDIUM_HARD_L31,MEDIUM->HARD,31,1,MEDIUM,31,Start on MEDIUM; Pit on lap 31 -> HARD,5120.2,0.34,18.1,14.2,TWO_STOP_SOFT_MEDIUM_HARD_L18_38,Start on SOFT; Pit on lap 18 -> MEDIUM; Pit on lap 38 -> HARD,Weather change or sudden rain,ONE_STOP_SOFT_HARD_L28,Start on SOFT; Pit on lap 28 -> HARD,Driver error recovery\n"
     )
     (run_dir / "championship_projection_2025.json").write_text(
         json.dumps(
             {
                 "driver": "NOR",
                 "team": "MCLAREN",
-                "projected_driver_points": 360.2,
-                "projected_constructors_points": 655.1,
                 "driver_title_probability": 0.58,
+                "constructors_title_probability": 0.66,
             }
         )
     )

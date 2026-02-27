@@ -13,8 +13,8 @@ def test_create_locked_snapshot(tmp_path: Path) -> None:
 
     out_a = reports / "strategy_recommendations_2025.csv"
     out_b = reports / "championship_projection_2025.json"
-    out_a.write_text("event_name,expected_points\nBahrain Grand Prix,18.2\n")
-    out_b.write_text('{"projected_driver_points": 320.5}\n')
+    out_a.write_text("event_name,strategy_score,win_probability\nBahrain Grand Prix,20.4,0.41\n")
+    out_b.write_text('{"driver_title_probability": 0.74, "constructors_title_probability": 0.81}\n')
 
     summary = {
         "training_rows": 100,

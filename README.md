@@ -7,7 +7,7 @@ An end-to-end **computer vision + machine learning** project to generate race-da
 - Tire degradation and fuel-load proxies
 - Weather signals by circuit and race window
 - CV-derived track-state/traffic metrics from session video
-- Monte Carlo strategy simulation and points projection
+- Monte Carlo strategy simulation with contingency planning
 
 This project is designed to be portfolio-grade for motorsport analytics roles.
 
@@ -19,8 +19,8 @@ For each 2025 race weekend:
 3. Trains a pace model on prior seasons.
 4. Extracts CV features (traffic, grip proxy, rain/visibility proxy) from practice footage.
 5. Simulates one-stop and two-stop strategy candidates.
-6. Outputs race strategy recommendation and expected points impact.
-7. Aggregates a season-level projection for drivers and constructors points.
+6. Outputs primary + fallback strategy recommendations with human-readable pit plans.
+7. Aggregates a season-level title-probability projection for drivers and constructors.
 
 ## 2. Project structure
 

@@ -20,6 +20,7 @@ def _vercel_config() -> dict[str, object]:
             {"source": "/api/data", "destination": "/data/payload.json"},
             {"source": "/overview", "destination": "/index.html"},
             {"source": "/races", "destination": "/index.html"},
+            {"source": "/strategy", "destination": "/index.html"},
         ],
     }
 

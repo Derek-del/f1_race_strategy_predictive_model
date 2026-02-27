@@ -12,6 +12,10 @@
     {
       "source": "/races",
       "destination": "/index.html"
+    },
+    {
+      "source": "/strategy",
+      "destination": "/index.html"
     }
   ]
 }

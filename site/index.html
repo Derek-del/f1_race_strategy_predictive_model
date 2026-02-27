@@ -217,7 +217,7 @@
 
     .hero-inner {
       display: grid;
-      grid-template-columns: 1.2fr auto;
+      grid-template-columns: 1fr;
       gap: 28px;
       padding: 36px;
       align-items: start;
@@ -243,14 +243,13 @@
 
     .hero-note {
       margin: 0;
-      font-size: 13px;
-      color: #d0a6ac;
-      max-width: 520px;
-      text-align: right;
-      letter-spacing: 0.08em;
-      line-height: 1.4;
-      text-transform: uppercase;
-      font-family: var(--mono);
+      font-size: clamp(20px, 2.4vw, 34px);
+      color: #f2d7db;
+      max-width: 980px;
+      text-align: left;
+      letter-spacing: -0.01em;
+      line-height: 1.18;
+      font-family: "Sora", "Helvetica Neue", Helvetica, Arial, sans-serif;
     }
 
     .title {
@@ -269,27 +268,6 @@
       color: var(--muted);
       font-size: 16px;
       line-height: 1.65;
-    }
-
-    .meta-pills {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 16px;
-    }
-
-    .pill {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: rgba(16, 16, 16, 0.85);
-      color: #d3d3d3;
-      padding: 7px 15px;
-      font-size: 13px;
-      font-family: var(--mono);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
     }
 
     .actions {
@@ -471,6 +449,60 @@
       font-size: 17px;
     }
 
+    .end-cta {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(150deg, rgba(14, 14, 14, 0.94) 0%, rgba(8, 8, 8, 0.9) 100%);
+      padding: 36px;
+      margin-top: 30px;
+      display: grid;
+      gap: 14px;
+      justify-items: start;
+    }
+
+    .end-cta h3 {
+      margin: 0;
+      font-size: clamp(28px, 3.5vw, 42px);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .end-cta p {
+      margin: 0;
+      max-width: 760px;
+      color: #c4c4c4;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .strategy-clean {
+      display: grid;
+      gap: 18px;
+    }
+
+    .strategy-head {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-md);
+      background: rgba(10, 10, 10, 0.9);
+      padding: 24px;
+      animation: panelIn 520ms var(--ease) both;
+    }
+
+    .strategy-head h2 {
+      margin: 0 0 8px 0;
+      font-size: clamp(26px, 3.2vw, 40px);
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+
+    .strategy-head p {
+      margin: 0;
+      color: #bfbfbf;
+      font-size: 15px;
+      line-height: 1.65;
+      max-width: 760px;
+    }
+
     .model-story {
       border: 1px solid var(--line);
       border-radius: var(--radius-lg);
@@ -613,34 +645,6 @@
       color: #d0d0d0;
       line-height: 1.62;
     }
-
-    .cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 18px;
-      margin-bottom: 24px;
-    }
-
-    .card {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-md);
-      background: rgba(14, 14, 14, 0.88);
-      padding: 22px;
-      opacity: 0;
-      transform: translateY(8px);
-      transition: border-color 220ms var(--ease), transform 220ms var(--ease), box-shadow 220ms var(--ease);
-    }
-
-    .card.reveal { animation: rise 320ms var(--delay, 0ms) var(--ease) forwards; }
-
-    .card:hover {
-      border-color: rgba(255, 49, 71, 0.3);
-      transform: translateY(-2px);
-      box-shadow: 0 12px 26px rgba(0, 0, 0, 0.32);
-    }
-
-    .label { margin: 0 0 10px 0; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: 0.08em; }
-    .value { margin: 0; font-size: 32px; font-weight: 600; }
 
     .grid-2 {
       display: grid;
@@ -785,6 +789,7 @@
     }
 
     .hint { margin: 0; font-size: 14px; color: var(--muted); }
+    .hint:empty { display: none; }
 
     table {
       width: 100%;
@@ -826,6 +831,22 @@
 
     tbody tr.reveal { animation: rise 360ms var(--delay, 0ms) var(--ease) forwards; }
     tbody tr:hover { background: rgba(255,49,71,0.08); }
+    tbody tr:active { background: rgba(255,49,71,0.14); }
+
+    .race-main {
+      display: block;
+      font-weight: 600;
+      color: #f2f2f2;
+    }
+
+    .race-location {
+      display: block;
+      margin-top: 4px;
+      color: #9f9f9f;
+      font-size: 12px;
+      font-family: var(--mono);
+      letter-spacing: 0.02em;
+    }
 
     .mono { font-family: "SFMono-Regular", Menlo, monospace; color: #bdbdbd; font-size: 12px; }
 
@@ -908,8 +929,9 @@
       background: rgba(0, 0, 0, 0.58);
       opacity: 0;
       pointer-events: none;
-      transition: opacity 180ms ease;
+      transition: opacity 220ms var(--ease);
       z-index: 18;
+      backdrop-filter: blur(2px);
     }
 
     .drawer-backdrop.show {
@@ -919,23 +941,42 @@
 
     .drawer {
       position: fixed;
-      top: 0;
-      right: 0;
-      height: 100%;
-      width: min(560px, 100%);
+      top: 50%;
+      left: 50%;
+      width: min(1280px, 96vw);
+      height: min(90vh, 1020px);
       background: rgba(8, 8, 8, 0.98);
-      border-left: 1px solid #232323;
-      transform: translateX(102%);
-      transition: transform 300ms var(--ease);
+      border: 1px solid #242424;
+      border-radius: 18px;
+      transform: translate(-50%, -46%) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 300ms var(--ease), opacity 300ms var(--ease);
       z-index: 20;
-      padding: 18px;
+      padding: 28px;
       display: grid;
       grid-template-rows: auto 1fr;
-      gap: 10px;
-      box-shadow: -20px 0 36px rgba(0,0,0,0.5);
+      gap: 14px;
+      box-shadow: 0 24px 60px rgba(0,0,0,0.58);
     }
 
-    .drawer.open { transform: translateX(0); }
+    .drawer.open {
+      transform: translate(-50%, -50%) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer.bump {
+      animation: drawerPulse 260ms var(--ease);
+    }
+
+    .drawer.open .tag {
+      animation: drawerItemIn 280ms var(--ease) both;
+    }
+
+    .drawer.open .tag:nth-child(2) { animation-delay: 50ms; }
+    .drawer.open .tag:nth-child(3) { animation-delay: 90ms; }
+    .drawer.open .tag:nth-child(4) { animation-delay: 130ms; }
 
     .drawer-head {
       display: flex;
@@ -946,16 +987,17 @@
 
     .drawer-body {
       overflow: auto;
-      font-size: 14px;
+      font-size: 15px;
       color: #e4e4e4;
       display: grid;
-      gap: 12px;
+      gap: 14px;
+      padding-right: 4px;
     }
 
     .drawer-grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
     }
 
     .kv {
@@ -964,6 +1006,21 @@
       background: #111;
       padding: 12px;
     }
+
+    .drawer.open .kv {
+      animation: drawerItemIn 320ms var(--ease) both;
+    }
+
+    .drawer.open .kv:nth-child(2) { animation-delay: 40ms; }
+    .drawer.open .kv:nth-child(3) { animation-delay: 70ms; }
+    .drawer.open .kv:nth-child(4) { animation-delay: 100ms; }
+    .drawer.open .kv:nth-child(5) { animation-delay: 130ms; }
+    .drawer.open .kv:nth-child(6) { animation-delay: 160ms; }
+    .drawer.open .kv:nth-child(7) { animation-delay: 190ms; }
+    .drawer.open .kv:nth-child(8) { animation-delay: 220ms; }
+    .drawer.open .kv:nth-child(9) { animation-delay: 250ms; }
+    .drawer.open .kv:nth-child(10) { animation-delay: 280ms; }
+    .drawer.open .kv:nth-child(11) { animation-delay: 310ms; }
 
     .kv p { margin: 0; }
 
@@ -1068,6 +1125,16 @@
       100% { transform: translateX(860px) scale(0.92); opacity: 0.72; }
     }
 
+    @keyframes drawerPulse {
+      0% { transform: translate(-50%, -49%) scale(0.985); }
+      100% { transform: translate(-50%, -50%) scale(1); }
+    }
+
+    @keyframes drawerItemIn {
+      0% { opacity: 0; transform: translateY(8px) scale(0.99); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
     @media (max-width: 980px) {
       .hero-inner {
         grid-template-columns: 1fr;
@@ -1106,10 +1173,6 @@
 
       .pop-grid {
         grid-template-columns: 1fr;
-      }
-
-      .cards {
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       }
 
       .hero-note {
@@ -1164,7 +1227,7 @@
         transition: none !important;
       }
 
-      .hero, .page, .card, .bar-row, tbody tr {
+      .hero, .page, .bar-row, tbody tr {
         opacity: 1 !important;
         transform: none !important;
       }
@@ -1217,25 +1280,11 @@
         <div>
           <div class="hero-rail">
             <p class="brand">boxbox</p>
-            <p class="hero-note">Strategy Precition model for the 2025 Formula 1 season</p>
           </div>
-          <h1 class="title">Race strategy</h1>
-          <p class="sub" id="metaLine">Loading run data...</p>
-          <div class="meta-pills">
-            <span class="pill" id="modePill">mode</span>
-            <span class="pill" id="pathPill">path</span>
-          </div>
+          <h1 class="title">A Race strategy prediction model</h1>
+          <p class="hero-note">Strategy predicition model for McLaren F1 for the 2025 Formula 1 season</p>
+          <p class="sub" id="metaLine">Loading race strategies...</p>
         </div>
-        <div class="actions">
-          <button class="btn primary" id="jumpStrategy">Explore race strategy</button>
-        </div>
-      </div>
-      <div class="tabs-wrap">
-        <nav class="tabs" id="tabs">
-          <button class="tab active" data-route="overview">Home</button>
-          <button class="tab" data-route="races">Race Strategy</button>
-        </nav>
-        <p class="route-hint">Track-level strategy plans with fallback options for race-day uncertainty.</p>
       </div>
     </header>
 
@@ -1244,19 +1293,13 @@
         <section class="landing">
           <h2>Build race-day decisions from practice, qualifying and contingency signals.</h2>
           <p>
-            This control panel turns model outputs into strategy actions: which tyre to start on, when to pit,
-            and what backup plans to activate if weather shifts, reliability drops, or race incidents occur.
+            The model uses the data from pre-season testing, practice session, qualifying session, weather forecast
+            and other parameters and outputs strategy actions: which tyre to start on, when to pit, and what backup
+            plans to activate if weather shifts, reliability drops, or race incidents occur.
           </p>
-          <button class="btn primary" id="jumpStrategySecondary">Open race strategy table</button>
         </section>
-
-        <section class="cards" id="kpiCards"></section>
-
         <section class="pop-flow reveal-on-scroll" id="scrollSignals">
-          <h3>As you scroll, race signals appear in sequence</h3>
-          <p>
-            Information is staged to stay readable: pace baseline first, then tyre and weather pressure, then fallback triggers.
-          </p>
+          <h3>How we use data to predict</h3>
           <div class="pop-grid">
             <article class="pop-item" style="--i:0">
               <h4>Baseline Pace</h4>
@@ -1319,96 +1362,83 @@
           </p>
           <div class="pop-grid">
             <article class="pop-item" style="--i:0">
-              <h4>Fallback 2</h4>
-              <p>Used for weather shifts, safety car windows or early tyre thermal drop.</p>
-            </article>
-            <article class="pop-item" style="--i:1">
-              <h4>Fallback 3</h4>
-              <p>Used for reliability risk, driver recovery laps or aggressive undercut defense.</p>
-            </article>
-            <article class="pop-item" style="--i:2">
-              <h4>Trigger Rules</h4>
-              <p>Each fallback includes explicit trigger text so operations can switch fast.</p>
-            </article>
-            <article class="pop-item" style="--i:3">
               <h4>Pit Guidance</h4>
               <p>Plans remain lap-specific: start tyre, first stop lap and full compound chain.</p>
             </article>
+            <article class="pop-item" style="--i:1">
+              <h4>Fallback 2</h4>
+              <p>Used for weather shifts, safety car windows or early tyre thermal drop.</p>
+            </article>
+            <article class="pop-item" style="--i:2">
+              <h4>Fallback 3</h4>
+              <p>Used for reliability risk, driver recovery laps or aggressive undercut defense.</p>
+            </article>
+            <article class="pop-item" style="--i:3">
+              <h4>Trigger Rules</h4>
+              <p>Each fallback includes explicit trigger text so operations can switch fast.</p>
+            </article>
           </div>
+        </section>
+
+        <section class="end-cta reveal-on-scroll" id="endCta">
+          <h3>Ready to explore strategy options?</h3>
+          <p>Move to a cleaner strategy dashboard focused on race plans, pit windows and fallback choices.</p>
+          <button class="btn primary" id="jumpStrategyEnd">Explore strategy</button>
         </section>
       </section>
 
-      <section class="page" id="page-races">
-        <section class="controls">
-          <div class="row">
-            <div class="field">
-              <label for="searchInput">Search</label>
-              <input id="searchInput" type="search" placeholder="Event, strategy, fallback trigger..." />
-            </div>
-            <div class="field">
-              <label for="stopFilter">Stops</label>
-              <select id="stopFilter">
-                <option value="all">All</option>
-                <option value="1">1 stop</option>
-                <option value="2">2 stops</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="minWin">Min win probability</label>
-              <input id="minWin" type="range" min="0" max="1" step="0.01" value="0" />
-            </div>
-            <div>
-              <button class="btn warn" id="resetFilters">Reset</button>
-            </div>
-          </div>
-          <p class="hint" id="filterState">No filters active.</p>
-        </section>
+      <section class="page" id="page-strategy">
+        <section class="strategy-clean">
+          <section class="strategy-head">
+            <h2>Clean strategy dashboard</h2>
+            <p>Filter events, compare primary plans and open each row for full fallback strategy details.</p>
+          </section>
 
-        <section class="pop-flow reveal-on-scroll" id="raceGuide">
-          <h3>How to read each race strategy row</h3>
-          <p>
-            Click any row for the full plan. The table keeps key decisions visible: starting tyre, pit windows, and contingency trigger.
-          </p>
-          <div class="pop-grid">
-            <article class="pop-item" style="--i:0">
-              <h4>Primary Plan</h4>
-              <p>Shows pit count, opening compound and first planned pit lap.</p>
-            </article>
-            <article class="pop-item" style="--i:1">
-              <h4>Fallback Triggers</h4>
-              <p>Weather, reliability and incident scenarios are mapped to backup plans.</p>
-            </article>
-            <article class="pop-item" style="--i:2">
-              <h4>Win Probability</h4>
-              <p>Filter for races where projected execution gives high upside.</p>
-            </article>
-            <article class="pop-item" style="--i:3">
-              <h4>Drilldown Drawer</h4>
-              <p>Open full strategy text with fallback #2 and #3 before race day decisions.</p>
-            </article>
-          </div>
-        </section>
+          <section class="controls">
+            <div class="row">
+              <div class="field">
+                <label for="searchInput">Search</label>
+                <input id="searchInput" type="search" placeholder="Race, strategy, fallback trigger..." />
+              </div>
+              <div class="field">
+                <label for="stopFilter">Stops</label>
+                <select id="stopFilter">
+                  <option value="all">All</option>
+                  <option value="1">1 stop</option>
+                  <option value="2">2 stops</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="minWin">Min win probability</label>
+                <input id="minWin" type="range" min="0" max="1" step="0.01" value="0" />
+              </div>
+              <div>
+                <button class="btn warn" id="resetFilters">Reset</button>
+              </div>
+            </div>
+            <p class="hint" id="filterState"></p>
+          </section>
 
-        <section class="table-wrap">
-          <div class="table-header">
-            <strong>Race Strategy Table (click row for full primary + fallback plan)</strong>
-            <p class="hint" id="tableCount">0 rows</p>
-          </div>
-          <div style="overflow:auto;">
-            <table>
-              <thead>
-                <tr>
-                  <th><button class="th-btn" data-sort="event_name">Event</button></th>
-                  <th><button class="th-btn" data-sort="strategy_plan">Primary Plan</button></th>
-                  <th><button class="th-btn" data-sort="stops">Stops</button></th>
-                  <th>Start Tyre</th>
-                  <th>First Pit</th>
-                  <th><button class="th-btn" data-sort="win_probability">Win Prob</button></th>
-                </tr>
-              </thead>
-              <tbody id="raceRows"></tbody>
-            </table>
-          </div>
+          <section class="table-wrap">
+            <div class="table-header">
+              <strong>Race Strategy Table</strong>
+            </div>
+            <div style="overflow:auto;">
+              <table>
+                <thead>
+                  <tr>
+                    <th><button class="th-btn" data-sort="event_name">Race</button></th>
+                    <th><button class="th-btn" data-sort="strategy_plan">Primary Plan</button></th>
+                    <th><button class="th-btn" data-sort="stops">Stops</button></th>
+                    <th>Start Tyre</th>
+                    <th>First Pit</th>
+                    <th><button class="th-btn" data-sort="win_probability">Win Prob</button></th>
+                  </tr>
+                </thead>
+                <tbody id="raceRows"></tbody>
+              </table>
+            </div>
+          </section>
         </section>
       </section>
     </main>
@@ -1424,7 +1454,7 @@
   </aside>
 
   <script>
-    const routes = ['overview', 'races'];
+    const routes = ['overview', 'strategy'];
     const state = {
       payload: null,
       sortKey: 'win_probability',
@@ -1441,11 +1471,57 @@
       return (value === null || value === undefined) ? '-' : String(value);
     }
 
+    const ROUND_META_2025 = {
+      1: { name: 'Australian Grand Prix', location: 'Melbourne, Australia' },
+      2: { name: 'Chinese Grand Prix', location: 'Shanghai, China' },
+      3: { name: 'Japanese Grand Prix', location: 'Suzuka, Japan' },
+      4: { name: 'Bahrain Grand Prix', location: 'Sakhir, Bahrain' },
+      5: { name: 'Saudi Arabian Grand Prix', location: 'Jeddah, Saudi Arabia' },
+      6: { name: 'Miami Grand Prix', location: 'Miami, USA' },
+      7: { name: 'Emilia Romagna Grand Prix', location: 'Imola, Italy' },
+      8: { name: 'Monaco Grand Prix', location: 'Monte Carlo, Monaco' },
+      9: { name: 'Spanish Grand Prix', location: 'Barcelona, Spain' },
+      10: { name: 'Canadian Grand Prix', location: 'Montreal, Canada' },
+      11: { name: 'Austrian Grand Prix', location: 'Spielberg, Austria' },
+      12: { name: 'British Grand Prix', location: 'Silverstone, United Kingdom' },
+      13: { name: 'Belgian Grand Prix', location: 'Spa-Francorchamps, Belgium' },
+      14: { name: 'Hungarian Grand Prix', location: 'Budapest, Hungary' },
+      15: { name: 'Dutch Grand Prix', location: 'Zandvoort, Netherlands' },
+      16: { name: 'Italian Grand Prix', location: 'Monza, Italy' },
+      17: { name: 'Azerbaijan Grand Prix', location: 'Baku, Azerbaijan' },
+      18: { name: 'Singapore Grand Prix', location: 'Singapore' },
+      19: { name: 'United States Grand Prix', location: 'Austin, USA' },
+      20: { name: 'Mexico City Grand Prix', location: 'Mexico City, Mexico' },
+      21: { name: 'Sao Paulo Grand Prix', location: 'Sao Paulo, Brazil' },
+      22: { name: 'Las Vegas Grand Prix', location: 'Las Vegas, USA' },
+      23: { name: 'Qatar Grand Prix', location: 'Lusail, Qatar' },
+      24: { name: 'Abu Dhabi Grand Prix', location: 'Yas Marina, UAE' }
+    };
+
+    function resolveRaceMeta(row) {
+      const rawName = safeText(row.event_name);
+      const match = rawName.match(/round[_\s-]?(\d{1,2})/i);
+      if (match) {
+        const round = Number(match[1]);
+        const meta = ROUND_META_2025[round];
+        if (meta) return meta;
+      }
+      for (const meta of Object.values(ROUND_META_2025)) {
+        if (meta.name.toLowerCase() === rawName.toLowerCase()) return meta;
+      }
+      return {
+        name: rawName,
+        location: safeText(row.location || row.circuit_location || row.country || '-')
+      };
+    }
+
     function routeFromHash() {
       const route = (window.location.hash || '').replace('#', '');
+      if (route === 'races') return 'strategy';
       if (routes.includes(route)) return route;
       const byPath = window.location.pathname.replace('/', '');
       if (byPath === 'home') return 'overview';
+      if (byPath === 'races') return 'strategy';
       if (routes.includes(byPath)) return byPath;
       return 'overview';
     }
@@ -1471,9 +1547,6 @@
       for (const page of document.querySelectorAll('.page')) {
         page.classList.toggle('active', page.id === `page-${route}`);
       }
-      for (const tab of document.querySelectorAll('.tab')) {
-        tab.classList.toggle('active', tab.dataset.route === route);
-      }
       document.body.classList.toggle('route-overview', route === 'overview');
       const car = document.querySelector('.car-bg');
       if (car && route !== 'overview') {
@@ -1487,7 +1560,7 @@
     function animatePageElements(route) {
       const page = document.getElementById(`page-${route}`);
       if (!page) return;
-      const targets = page.querySelectorAll('.panel, .controls, .table-wrap, .card, .story-card');
+      const targets = page.querySelectorAll('.panel, .controls, .table-wrap, .story-card, .strategy-head');
       targets.forEach((el, i) => {
         el.style.animation = 'none';
         void el.offsetWidth;
@@ -1557,28 +1630,7 @@
       ripple.addEventListener('animationend', () => ripple.remove(), { once: true });
     }
 
-    function createCard(label, value, idx) {
-      const card = document.createElement('div');
-      card.className = 'card reveal';
-      card.style.setProperty('--delay', `${70 + idx * 40}ms`);
-      card.innerHTML = `<p class='label'>${label}</p><p class='value'>${value}</p>`;
-      return card;
-    }
-
     function renderOverview(payload) {
-      const k = payload.kpis || {};
-      const cards = document.getElementById('kpiCards');
-      cards.innerHTML = '';
-      const defs = [
-        ['Training Rows', k.training_rows ?? '-'],
-        ['Inference Rows', k.inference_rows ?? '-'],
-        ['MAE', fmt(k.mae, 3)],
-        ['RMSE', fmt(k.rmse, 3)],
-        ['Driver Title Prob', pct(k.driver_title_probability)],
-        ['Constructors Title Prob', pct(k.constructors_title_probability)]
-      ];
-      defs.forEach((d, i) => cards.appendChild(createCard(d[0], d[1], i)));
-
       const rv = payload.round_validation || {};
       const status = document.getElementById('roundStatus');
       const all = rv.all_rounds_present;
@@ -1600,13 +1652,14 @@
       const topRows = payload.top_rounds || [];
       const maxWin = Math.max(...topRows.map(r => Number(r.win_probability || 0)), 0.01);
       topRows.forEach((r, i) => {
+        const race = resolveRaceMeta(r);
         const val = Number(r.win_probability || 0);
         const width = Math.max(4, Math.round((val / maxWin) * 100));
         const row = document.createElement('div');
         row.className = 'bar-row reveal';
         row.style.setProperty('--delay', `${110 + (i * 65)}ms`);
         row.innerHTML = `
-          <span>${safeText(r.event_name)}</span>
+          <span>${safeText(race.name)}</span>
           <div class='bar'><span data-width='${width}%'></span></div>
           <span>${pct(val)}</span>
         `;
@@ -1652,6 +1705,11 @@
     }
 
     function compare(a, b, key) {
+      if (key === 'event_name') {
+        const aname = resolveRaceMeta(a).name;
+        const bname = resolveRaceMeta(b).name;
+        return aname.localeCompare(bname);
+      }
       const av = a[key];
       const bv = b[key];
       const an = Number(av);
@@ -1666,7 +1724,8 @@
       const stop = document.getElementById('stopFilter').value;
       const minWin = Number(document.getElementById('minWin').value || 0);
       const out = rows.filter(r => {
-        const blob = `${safeText(r.event_name)} ${safeText(r.best_strategy)} ${safeText(r.strategy_plan)} ${safeText(r.compounds)} ${safeText(r.fallback_2_plan)} ${safeText(r.fallback_3_plan)} ${safeText(r.fallback_2_trigger)} ${safeText(r.fallback_3_trigger)}`.toLowerCase();
+        const race = resolveRaceMeta(r);
+        const blob = `${safeText(race.name)} ${safeText(race.location)} ${safeText(r.best_strategy)} ${safeText(r.strategy_plan)} ${safeText(r.compounds)} ${safeText(r.fallback_2_plan)} ${safeText(r.fallback_3_plan)} ${safeText(r.fallback_2_trigger)} ${safeText(r.fallback_3_trigger)}`.toLowerCase();
         const okSearch = !search || blob.includes(search);
         const okStop = stop === 'all' || String(Math.round(Number(r.stops || 0))) === stop;
         const okWin = Number(r.win_probability || 0) >= minWin;
@@ -1685,12 +1744,13 @@
       const body = document.getElementById('raceRows');
       body.innerHTML = '';
       rows.forEach((r, i) => {
+        const race = resolveRaceMeta(r);
         const tr = document.createElement('tr');
         tr.className = 'reveal';
         tr.style.setProperty('--delay', `${Math.min(i * 12, 240)}ms`);
         tr.dataset.index = String(i);
         tr.innerHTML = `
-          <td>${safeText(r.event_name)}</td>
+          <td><span class='race-main'>${safeText(race.name)}</span><span class='race-location'>${safeText(race.location)}</span></td>
           <td>${safeText(r.strategy_plan || r.best_strategy)}</td>
           <td>${fmt(r.stops, 0)}</td>
           <td>${safeText(r.start_compound || '-')}</td>
@@ -1699,22 +1759,25 @@
         `;
         body.appendChild(tr);
       });
-      document.getElementById('tableCount').textContent = `${rows.length} rows`;
       const minWin = Number(document.getElementById('minWin').value || 0);
       const stop = document.getElementById('stopFilter').value;
       const parts = [];
       if (minWin > 0) parts.push(`min win ${pct(minWin)}`);
       if (stop !== 'all') parts.push(`${stop} stop`);
       if (document.getElementById('searchInput').value.trim()) parts.push('search active');
-      document.getElementById('filterState').textContent = parts.length ? parts.join(' | ') : 'No filters active.';
+      document.getElementById('filterState').textContent = parts.length ? parts.join(' | ') : '';
     }
 
     function openDrawer(row) {
       if (!row) return;
-      document.getElementById('drawerTitle').textContent = safeText(row.event_name);
+      const race = resolveRaceMeta(row);
+      document.getElementById('drawerTitle').textContent = race.location && race.location !== '-'
+        ? `${safeText(race.name)} · ${safeText(race.location)}`
+        : safeText(race.name);
       const body = document.getElementById('drawerBody');
       body.innerHTML = `
         <div>
+          <span class='tag'>${safeText(race.location)}</span>
           <span class='tag'>${safeText(row.team)}</span>
           <span class='tag'>${safeText(row.driver)}</span>
           <span class='tag'>${safeText(row.start_compound || row.compounds)}</span>
@@ -1733,21 +1796,32 @@
           <div class='kv'><p class='k'>Fallback #3 Trigger</p><p class='v'>${safeText(row.fallback_3_trigger)}</p></div>
         </div>
       `;
-      document.getElementById('drawerBackdrop').classList.add('show');
-      document.getElementById('raceDrawer').classList.add('open');
+      const backdrop = document.getElementById('drawerBackdrop');
+      const drawer = document.getElementById('raceDrawer');
+      backdrop.classList.add('show');
+      drawer.classList.remove('open');
+      drawer.classList.remove('bump');
+      void drawer.offsetWidth;
+      drawer.classList.add('open');
+      drawer.classList.add('bump');
     }
 
     function closeDrawer() {
       document.getElementById('drawerBackdrop').classList.remove('show');
-      document.getElementById('raceDrawer').classList.remove('open');
+      const drawer = document.getElementById('raceDrawer');
+      drawer.classList.remove('open');
+      drawer.classList.remove('bump');
     }
 
     function bindEvents() {
-      document.getElementById('tabs').addEventListener('click', (event) => {
-        const btn = event.target.closest('.tab');
-        if (!btn) return;
-        setRoute(btn.dataset.route || 'overview');
-      });
+      const tabs = document.getElementById('tabs');
+      if (tabs) {
+        tabs.addEventListener('click', (event) => {
+          const btn = event.target.closest('.tab');
+          if (!btn) return;
+          setRoute(btn.dataset.route || 'overview');
+        });
+      }
       window.addEventListener('hashchange', () => {
         animateRouteSwap(() => renderRoute(routeFromHash()));
       });
@@ -1759,8 +1833,10 @@
         spawnRipple(target, event.clientX, event.clientY);
       });
 
-      document.getElementById('jumpStrategy').addEventListener('click', () => setRoute('races'));
-      document.getElementById('jumpStrategySecondary').addEventListener('click', () => setRoute('races'));
+      const jumpStrategyEnd = document.getElementById('jumpStrategyEnd');
+      if (jumpStrategyEnd) {
+        jumpStrategyEnd.addEventListener('click', () => setRoute('strategy'));
+      }
 
       document.getElementById('searchInput').addEventListener('input', renderRaceTable);
       document.getElementById('stopFilter').addEventListener('change', renderRaceTable);
@@ -1795,12 +1871,11 @@
     }
 
     function renderHeader(payload) {
-      const src = payload.source || {};
-      document.getElementById('modePill').textContent = `mode: ${safeText(src.mode)}`;
-      document.getElementById('pathPill').textContent = safeText(src.path);
-      document.getElementById('metaLine').textContent = src.created_at_utc
-        ? `Snapshot created (UTC): ${src.created_at_utc}`
-        : 'Using reports output (no lock manifest found).';
+      const rows = payload.strategy_rows || [];
+      const firstYear = rows.length ? safeText(rows[0].year) : "2025";
+      document.getElementById('metaLine').textContent = rows.length
+        ? `${rows.length} race strategies loaded for the ${firstYear} season.`
+        : `Race strategies ready for the ${firstYear} season.`;
     }
 
     async function loadPayload() {

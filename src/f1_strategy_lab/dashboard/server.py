@@ -1560,19 +1560,6 @@ def _dashboard_html() -> str:
           </div>
         </section>
 
-        <section class="grid-2 reveal-on-scroll" id="validationBlock">
-          <div class="panel">
-            <h3>Round Validation</h3>
-            <p id="roundStatus"></p>
-            <p class="sub" id="roundDetail"></p>
-            <svg class="spark" id="pointsSpark" viewBox="0 0 600 90" preserveAspectRatio="none"></svg>
-          </div>
-          <div class="panel">
-            <h3>Top Rounds by Win Probability</h3>
-            <div id="topRounds"></div>
-          </div>
-        </section>
-
         <section class="model-story reveal-on-scroll" id="modelStory">
           <h3>What this strategy model does</h3>
           <p>
@@ -1632,6 +1619,11 @@ def _dashboard_html() -> str:
           <section class="strategy-head reveal-on-scroll" id="strategyHead">
             <h2>Clean strategy dashboard</h2>
             <p>Filter events, compare primary plans and open each row for full fallback strategy details.</p>
+          </section>
+
+          <section class="panel reveal-on-scroll" id="topRoundsPanel">
+            <h3>Top Rounds by Win Probability</h3>
+            <div id="topRounds"></div>
           </section>
 
           <section class="controls reveal-on-scroll" id="strategyControls">
@@ -1912,22 +1904,6 @@ def _dashboard_html() -> str:
     }
 
     function renderOverview(payload) {
-      const rv = payload.round_validation || {};
-      const status = document.getElementById('roundStatus');
-      const all = rv.all_rounds_present;
-      if (all === true) {
-        status.className = 'status-good';
-        status.textContent = 'All rounds present';
-      } else if (all === false) {
-        status.className = 'status-bad';
-        status.textContent = 'Coverage gap detected';
-      } else {
-        status.className = 'status-warn';
-        status.textContent = 'Validation unavailable';
-      }
-      document.getElementById('roundDetail').textContent =
-        `Expected: ${rv.expected_rounds ?? '-'} | Produced: ${rv.produced_rounds ?? '-'} | Missing: ${(rv.missing_events || []).length}`;
-
       const top = document.getElementById('topRounds');
       top.innerHTML = '';
       const topRows = payload.top_rounds || [];
@@ -1948,41 +1924,6 @@ def _dashboard_html() -> str:
         const fill = row.querySelector('span[data-width]');
         requestAnimationFrame(() => { fill.style.width = fill.dataset.width || '0%'; });
       });
-
-      renderSparkline(payload.strategy_rows || []);
-    }
-
-    function renderSparkline(rows) {
-      const svg = document.getElementById('pointsSpark');
-      if (!rows.length) {
-        svg.innerHTML = '';
-        return;
-      }
-      const pts = rows.map(r => Number(r.win_probability || 0));
-      const min = Math.min(...pts);
-      const max = Math.max(...pts);
-      const span = (max - min) || 1;
-      const width = 600;
-      const height = 90;
-      const pad = 10;
-      const toXY = (v, i) => {
-        const x = pad + (i * ((width - pad * 2) / Math.max(rows.length - 1, 1)));
-        const y = height - pad - (((v - min) / span) * (height - pad * 2));
-        return [x, y];
-      };
-      const coords = pts.map((v, i) => toXY(v, i));
-      const line = coords.map((c, i) => `${i === 0 ? 'M' : 'L'}${c[0].toFixed(2)},${c[1].toFixed(2)}`).join(' ');
-      const area = `${line} L${coords[coords.length - 1][0]},${height - pad} L${coords[0][0]},${height - pad} Z`;
-      svg.innerHTML = `
-        <defs>
-          <linearGradient id='g1' x1='0' y1='0' x2='0' y2='1'>
-            <stop offset='0%' stop-color='rgba(255,49,71,0.45)'/>
-            <stop offset='100%' stop-color='rgba(255,49,71,0)'/>
-          </linearGradient>
-        </defs>
-        <path d='${area}' fill='url(#g1)'></path>
-        <path d='${line}' fill='none' stroke='#ff3d53' stroke-width='2.2'></path>
-      `;
     }
 
     function compare(a, b, key) {

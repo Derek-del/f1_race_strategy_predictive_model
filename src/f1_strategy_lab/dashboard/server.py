@@ -459,11 +459,11 @@ def _dashboard_html() -> str:
     }
 
     .hero {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(160deg, rgba(14, 14, 14, 0.92) 0%, rgba(9, 9, 9, 0.86) 100%);
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
       position: relative;
       animation: rise 560ms var(--ease) both;
       min-height: calc(100vh - 74px);
@@ -489,7 +489,7 @@ def _dashboard_html() -> str:
         linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px),
         linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px);
       background-size: 28px 28px;
-      opacity: 0.2;
+      opacity: 0.12;
       pointer-events: none;
     }
 
@@ -705,28 +705,19 @@ def _dashboard_html() -> str:
     }
 
     .landing {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(150deg, rgba(15, 15, 15, 0.92) 0%, rgba(8, 8, 8, 0.9) 100%);
-      padding: 52px;
-      margin-bottom: 30px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 8px 0 2px;
+      margin-bottom: 16px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
       transform-origin: center;
-      animation: floatSoft 7s ease-in-out infinite;
+      animation: none;
     }
 
     .landing::after {
-      content: "";
-      position: absolute;
-      width: 360px;
-      height: 360px;
-      border-radius: 999px;
-      right: -130px;
-      top: -120px;
-      background: radial-gradient(circle, rgba(255, 138, 0,0.26) 0%, rgba(255, 138, 0,0) 72%);
-      pointer-events: none;
-      animation: breathe 7s ease-in-out infinite;
+      content: none;
     }
 
     .landing h2 {
@@ -746,11 +737,11 @@ def _dashboard_html() -> str:
     }
 
     .end-cta {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(150deg, rgba(14, 14, 14, 0.94) 0%, rgba(8, 8, 8, 0.9) 100%);
-      padding: 36px;
-      margin-top: 30px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 18px 0 0;
+      margin-top: 20px;
       display: grid;
       gap: 14px;
       justify-items: start;
@@ -800,21 +791,17 @@ def _dashboard_html() -> str:
     }
 
     .model-story {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(150deg, rgba(13,13,13,0.95) 0%, rgba(8,8,8,0.92) 100%);
-      padding: 36px;
-      margin-top: 30px;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 8px 0 2px;
+      margin-top: 16px;
       position: relative;
-      overflow: hidden;
+      overflow: visible;
     }
 
     .model-story::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(100deg, rgba(255, 138, 0,0.06), transparent 30%, transparent 70%, rgba(255, 138, 0,0.06));
-      pointer-events: none;
+      content: none;
     }
 
     .model-story h3 {
@@ -834,12 +821,12 @@ def _dashboard_html() -> str:
     }
 
     .pop-flow {
-      border: 1px solid var(--line);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(150deg, rgba(12,12,12,0.95) 0%, rgba(8,8,8,0.92) 100%);
-      padding: 36px;
-      margin-top: 30px;
-      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      padding: 8px 0 2px;
+      margin-top: 16px;
+      overflow: visible;
       position: relative;
     }
 
@@ -866,13 +853,14 @@ def _dashboard_html() -> str:
     }
 
     .pop-item {
-      border: 1px solid #242424;
-      border-radius: var(--radius-sm);
-      background: rgba(14,14,14,0.9);
-      padding: 20px;
+      border: 0;
+      border-left: 2px solid rgba(255, 138, 0, 0.34);
+      border-radius: 0;
+      background: transparent;
+      padding: 14px 0 14px 16px;
       opacity: 0;
       transform: translateY(20px) scale(0.98);
-      transition: border-color 220ms var(--ease), transform 220ms var(--ease), background-color 220ms var(--ease);
+      transition: border-color 220ms var(--ease), transform 220ms var(--ease), opacity 220ms var(--ease);
     }
 
     .reveal-on-scroll.in-view .pop-item {
@@ -880,9 +868,8 @@ def _dashboard_html() -> str:
     }
 
     .pop-item:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 138, 0, 0.4);
-      background: rgba(20,12,13,0.9);
+      transform: translateX(6px);
+      border-color: rgba(255, 138, 0, 0.64);
     }
 
     .pop-item h4 {
@@ -908,19 +895,19 @@ def _dashboard_html() -> str:
     }
 
     .story-card {
-      border: 1px solid #212121;
-      border-radius: var(--radius-sm);
-      background: rgba(13,13,13,0.9);
-      padding: 22px;
+      border: 0;
+      border-left: 2px solid rgba(255, 138, 0, 0.3);
+      border-radius: 0;
+      background: transparent;
+      padding: 14px 0 14px 16px;
       min-height: 150px;
-      transition: transform 260ms var(--ease), border-color 260ms var(--ease), background-color 260ms var(--ease);
+      transition: transform 260ms var(--ease), border-color 260ms var(--ease);
       animation: rise 600ms var(--delay, 0ms) var(--ease) both;
     }
 
     .story-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(255, 138, 0, 0.34);
-      background: rgba(20, 12, 13, 0.92);
+      transform: translateX(6px);
+      border-color: rgba(255, 138, 0, 0.6);
     }
 
     .story-card:nth-child(1) { --delay: 140ms; }

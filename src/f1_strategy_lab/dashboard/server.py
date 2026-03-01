@@ -471,6 +471,14 @@ def _dashboard_html() -> str:
       align-items: center;
     }
 
+    body.route-strategy .hero {
+      display: none;
+    }
+
+    body.route-strategy main {
+      padding-top: clamp(10px, 2vw, 24px);
+    }
+
     .hero::after {
       content: "";
       position: absolute;
@@ -1879,6 +1887,7 @@ def _dashboard_html() -> str:
         page.classList.toggle('active', page.id === `page-${route}`);
       }
       document.body.classList.toggle('route-overview', route === 'overview');
+      document.body.classList.toggle('route-strategy', route === 'strategy');
       const car = document.querySelector('.car-bg');
       if (car && route !== 'overview') {
         car.style.setProperty('--parallax-x', '0px');
@@ -2185,9 +2194,9 @@ def _dashboard_html() -> str:
         jumpStrategyEnd.addEventListener('click', () => {
           setRoute('strategy');
           window.setTimeout(() => {
-            const table = document.getElementById('strategyTableWrap');
-            if (table) {
-              table.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            const head = document.getElementById('strategyHead');
+            if (head) {
+              head.scrollIntoView({ behavior: 'smooth', block: 'start' });
             }
           }, 140);
         });

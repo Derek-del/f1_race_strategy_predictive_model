@@ -424,6 +424,40 @@ def _dashboard_html() -> str:
       transition: opacity 420ms var(--ease), transform 420ms var(--ease), filter 420ms var(--ease);
     }
 
+    .car-bg .car-photo.silhouette .silhouette-shell {
+      fill: #050a14;
+      stroke: rgba(222, 234, 255, 0.46);
+      stroke-width: 1.3;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .car-bg .car-photo.silhouette .silhouette-wing,
+    .car-bg .car-photo.silhouette .silhouette-floor {
+      fill: #04070f;
+      stroke: rgba(186, 209, 255, 0.36);
+      stroke-width: 1.1;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .car-bg .car-photo.silhouette .silhouette-line {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.34);
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .car-bg .car-photo.silhouette .silhouette-wheel {
+      fill: #02040b;
+      stroke: rgba(182, 208, 255, 0.22);
+      stroke-width: 1.3;
+      vector-effect: non-scaling-stroke;
+    }
+
+    .car-bg .car-photo.silhouette .silhouette-hub {
+      fill: rgba(236, 243, 255, 0.72);
+    }
+
     body.route-overview .car-bg .car-photo {
       opacity: calc((0.16 + (var(--hero-glow) * 0.84)) * var(--hero-fade));
       transform:
@@ -1613,11 +1647,16 @@ def _dashboard_html() -> str:
 
   <div class="car-bg" aria-hidden="true">
     <div class="motion-layer"></div>
-    <img
-      class="car-photo"
-      src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Max_Verstappen_Red_Bull_RB19_Petersen_Automotive_Museum.jpg"
-      alt="Red Bull RB19 Formula 1 car"
-    />
+    <svg class="car-photo silhouette" viewBox="0 0 320 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path class="silhouette-shell" d="M12 63L22 58L40 55H56L74 53L92 43H126L146 37H174L188 30H230L248 40H262L280 47L296 50L306 58L314 66H294L286 60H266L258 74H224L216 60H178L170 74H136L128 62H100L90 74H64L56 66H44L34 72H16L12 63Z"/>
+      <path class="silhouette-wing" d="M270 36H290V60H262L270 36Z"/>
+      <path class="silhouette-floor" d="M4 68H24L20 74H2L4 68Z"/>
+      <path class="silhouette-line" d="M102 58C130 56 156 51 184 44C198 41 214 36 228 33"/>
+      <circle class="silhouette-wheel" cx="90" cy="76" r="12"/>
+      <circle class="silhouette-wheel" cx="228" cy="76" r="12"/>
+      <circle class="silhouette-hub" cx="90" cy="76" r="4.2"/>
+      <circle class="silhouette-hub" cx="228" cy="76" r="4.2"/>
+    </svg>
   </div>
 
   <div class="site">

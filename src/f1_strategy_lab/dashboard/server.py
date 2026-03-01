@@ -404,8 +404,16 @@ def _dashboard_html() -> str:
       transform: scale(calc(0.92 + (var(--hero-glow) * 0.2)));
     }
 
-    body.route-overview.loaded .car-bg svg {
-      animation: silhouetteBloom 1700ms var(--ease) forwards, silhouetteIdle 9s 1700ms ease-in-out infinite;
+    body.route-overview.loaded.pop-phase .car-bg svg {
+      animation: carPopToBackground 1500ms var(--ease) forwards;
+    }
+
+    body.route-overview.loaded:not(.pop-phase) .car-bg svg {
+      animation: silhouetteSettle 900ms var(--ease) forwards, silhouetteIdle 9s 900ms ease-in-out infinite;
+    }
+
+    body.route-overview.loaded.pop-phase .car-bg::after {
+      animation: backgroundFlash 1300ms var(--ease) both;
     }
 
     .car-bg .car-shell {
@@ -1388,10 +1396,15 @@ def _dashboard_html() -> str:
       50% { transform: translateX(-18px); }
     }
 
-    @keyframes silhouetteBloom {
-      0% { transform: scale(0.9) translateX(0); opacity: 0.88; }
-      58% { transform: scale(1.28) translateX(-20px); opacity: 0.62; }
-      100% { transform: scale(1.12) translateX(-10px); opacity: 0.38; }
+    @keyframes carPopToBackground {
+      0% { transform: scale(0.84) translateX(42px) translateY(8px); opacity: 0.12; }
+      36% { transform: scale(1.36) translateX(-24px) translateY(-4px); opacity: 0.96; }
+      100% { transform: scale(1.1) translateX(-10px) translateY(0); opacity: 0.34; }
+    }
+
+    @keyframes silhouetteSettle {
+      0% { transform: scale(1.1) translateX(-10px) translateY(0); opacity: 0.34; }
+      100% { transform: scale(1.12) translateX(0) translateY(0); opacity: 0.36; }
     }
 
     @keyframes silhouetteIdle {
@@ -1438,6 +1451,12 @@ def _dashboard_html() -> str:
     @keyframes bodyPulse {
       0%, 100% { opacity: 0.45; }
       50% { opacity: 0.86; }
+    }
+
+    @keyframes backgroundFlash {
+      0% { opacity: 0.08; transform: scale(0.9); }
+      40% { opacity: 0.8; transform: scale(1.03); }
+      100% { opacity: calc(0.06 + (var(--hero-glow) * 0.48)); transform: scale(calc(0.94 + (var(--hero-glow) * 0.08))); }
     }
 
     @keyframes roadMove {
@@ -1854,6 +1873,7 @@ def _dashboard_html() -> str:
       filteredRows: []
     };
     let scrollObserver = null;
+    let popPhaseTimer = null;
 
     const clamp = (value, min, max) => Math.min(max, Math.max(min, value));
     const fmt = (v, n=3) => (v === null || v === undefined || Number.isNaN(v)) ? '-' : Number(v).toFixed(n);
@@ -1968,7 +1988,18 @@ def _dashboard_html() -> str:
       const loader = document.getElementById('loadingScreen');
       if (!loader) return;
       loader.classList.add('hide');
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
       document.body.classList.add('loaded');
+      if (reduceMotion) return;
+
+      document.body.classList.add('pop-phase');
+      if (popPhaseTimer !== null) {
+        window.clearTimeout(popPhaseTimer);
+      }
+      popPhaseTimer = window.setTimeout(() => {
+        document.body.classList.remove('pop-phase');
+        popPhaseTimer = null;
+      }, 1500);
     }
 
     function initCarParallax() {

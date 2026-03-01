@@ -4,8 +4,17 @@ import numpy as np
 import pandas as pd
 
 
-def synthetic_training_data(n_events: int = 120, random_state: int = 42) -> pd.DataFrame:
+def synthetic_training_data(
+    n_events: int = 120,
+    random_state: int = 42,
+    team: str = "MCLAREN",
+    driver: str = "NOR",
+    years: list[int] | None = None,
+) -> pd.DataFrame:
     rng = np.random.default_rng(random_state)
+    year_cycle = years or [2020, 2021, 2022, 2023, 2024]
+    team_code = str(team).strip().upper() or "MCLAREN"
+    driver_code = str(driver).strip().upper() or "NOR"
 
     compounds = ["SOFT", "MEDIUM", "HARD"]
     rows: list[dict[str, float | int | str]] = []
@@ -58,10 +67,10 @@ def synthetic_training_data(n_events: int = 120, random_state: int = 42) -> pd.D
 
         rows.append(
             {
-                "year": 2020 + (i % 5),
+                "year": int(year_cycle[i % len(year_cycle)]),
                 "event_name": event,
-                "team": "MCLAREN",
-                "driver": "NOR",
+                "team": team_code,
+                "driver": driver_code,
                 "fp2_avg_lap_sec": fp2_pace,
                 "quali_best_lap_sec": q_best,
                 "deg_soft": deg_soft,

@@ -135,6 +135,7 @@ def run_season_pipeline(
     # Training set
     train_df: pd.DataFrame
     used_synthetic_training = False
+    synthetic_years = cfg.training_years or [cfg.target_year - 3, cfg.target_year - 2, cfg.target_year - 1]
     try:
         train_df = build_training_dataset(
             years=cfg.training_years,
@@ -148,13 +149,23 @@ def run_season_pipeline(
         if not synthetic_fallback:
             raise
         print(f"[WARN] Falling back to synthetic training data: {exc}")
-        train_df = synthetic_training_data(random_state=cfg.model.random_state)
+        train_df = synthetic_training_data(
+            random_state=cfg.model.random_state,
+            team=cfg.team,
+            driver=cfg.target_driver,
+            years=synthetic_years,
+        )
         used_synthetic_training = True
 
     if train_df.empty:
         if not synthetic_fallback:
             raise RuntimeError("Training dataset is empty")
-        train_df = synthetic_training_data(random_state=cfg.model.random_state)
+        train_df = synthetic_training_data(
+            random_state=cfg.model.random_state,
+            team=cfg.team,
+            driver=cfg.target_driver,
+            years=synthetic_years,
+        )
         used_synthetic_training = True
 
     feature_set = prepare_feature_set(train_df, target_col="target_race_pace")

@@ -1423,7 +1423,7 @@
     <div class="motion-layer"></div>
     <img
       class="car-photo"
-      src="https://upload.wikimedia.org/wikipedia/commons/b/b0/2023_Red_Bull_RB19.jpg"
+      src="https://upload.wikimedia.org/wikipedia/commons/0/0a/Max_Verstappen_Red_Bull_RB19_Petersen_Automotive_Museum.jpg"
       alt="Red Bull RB19 Formula 1 car"
     />
   </div>
@@ -1437,7 +1437,7 @@
             <p class="brand-sub">do not f**kup</p>
           </div>
           <h1 class="title">A Race strategy prediction model</h1>
-          <p class="hero-note">Strategy prediction model for Red Bull Racing for the 2025 Formula 1 season</p>
+          <p class="hero-note">Strategy prediction model for Red Bull Racing and Max Verstappen for the 2025 Formula 1 season</p>
           <p class="sub" id="metaLine">Loading race strategies...</p>
         </div>
       </div>
@@ -1618,6 +1618,28 @@
 
     function safeText(value) {
       return (value === null || value === undefined) ? '-' : String(value);
+    }
+
+    const DRIVER_LABELS = {
+      VER: 'Max Verstappen',
+      NOR: 'Lando Norris',
+      PIA: 'Oscar Piastri',
+      LEC: 'Charles Leclerc',
+      SAI: 'Carlos Sainz',
+      HAM: 'Lewis Hamilton',
+      RUS: 'George Russell',
+      PER: 'Sergio Perez'
+    };
+
+    function displayDriver(driverCode) {
+      const code = safeText(driverCode).toUpperCase();
+      return DRIVER_LABELS[code] || safeText(driverCode);
+    }
+
+    function displayTeam(teamName) {
+      const key = safeText(teamName).toUpperCase();
+      if (key.includes('RED BULL')) return 'Red Bull Racing';
+      return safeText(teamName);
     }
 
     const ROUND_META_2025 = {
@@ -1946,8 +1968,8 @@
         <div>
           <span class='tag'>${safeText(race.when)}</span>
           <span class='tag'>${safeText(race.location)}</span>
-          <span class='tag'>${safeText(row.team)}</span>
-          <span class='tag'>${safeText(row.driver)}</span>
+          <span class='tag'>${displayTeam(row.team)}</span>
+          <span class='tag'>${displayDriver(row.driver)}</span>
           <span class='tag'>${safeText(row.start_compound || row.compounds)}</span>
         </div>
         <div class='drawer-grid'>
@@ -2049,9 +2071,11 @@
     function renderHeader(payload) {
       const rows = payload.strategy_rows || [];
       const firstYear = rows.length ? safeText(rows[0].year) : "2025";
+      const team = rows.length ? displayTeam(rows[0].team) : "Red Bull Racing";
+      const driver = rows.length ? displayDriver(rows[0].driver) : "Max Verstappen";
       document.getElementById('metaLine').textContent = rows.length
-        ? `${rows.length} race strategies loaded for the ${firstYear} season.`
-        : `Race strategies ready for the ${firstYear} season.`;
+        ? `${rows.length} race strategies loaded for the ${firstYear} season. Model target: ${team} · ${driver}.`
+        : `Race strategies ready for the ${firstYear} season. Model target: ${team} · ${driver}.`;
     }
 
     async function loadPayload() {

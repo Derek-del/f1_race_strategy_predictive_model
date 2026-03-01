@@ -140,9 +140,40 @@
       --parallax-x: 0px;
       --parallax-y: 0px;
       --hero-glow: 1;
+      isolation: isolate;
       transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
       filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.58));
       transition: opacity 420ms var(--ease), transform 420ms var(--ease), right 420ms var(--ease), width 420ms var(--ease), top 420ms var(--ease);
+    }
+
+    .car-bg::before {
+      content: "";
+      position: absolute;
+      inset: 12% -12% 18% 32%;
+      background: repeating-linear-gradient(
+        96deg,
+        rgba(255, 73, 94, 0.2) 0 2px,
+        transparent 2px 24px
+      );
+      opacity: 0;
+      z-index: 0;
+      pointer-events: none;
+      filter: blur(0.6px);
+      transition: opacity 420ms var(--ease);
+    }
+
+    .car-bg::after {
+      content: "";
+      position: absolute;
+      inset: 24% -8% 18% 12%;
+      background:
+        radial-gradient(56% 44% at 48% 54%, rgba(255, 52, 76, 0.38) 0%, rgba(255, 52, 76, 0.12) 45%, rgba(255, 52, 76, 0) 100%),
+        radial-gradient(42% 30% at 82% 56%, rgba(255, 52, 76, 0.18) 0%, rgba(255, 52, 76, 0) 100%);
+      opacity: 0;
+      z-index: 0;
+      pointer-events: none;
+      mix-blend-mode: screen;
+      transition: opacity 420ms var(--ease), transform 420ms var(--ease);
     }
 
     body.route-overview .car-bg {
@@ -155,12 +186,24 @@
         drop-shadow(0 0 40px rgba(0, 0, 0, 0.6));
     }
 
+    body.route-overview .car-bg::before {
+      opacity: calc(0.05 + (var(--hero-glow) * 0.34));
+      animation: speedLines 2100ms linear infinite;
+    }
+
+    body.route-overview .car-bg::after {
+      opacity: calc(0.06 + (var(--hero-glow) * 0.48));
+      transform: scale(calc(0.94 + (var(--hero-glow) * 0.08)));
+    }
+
     .car-bg svg {
       width: 100%;
       height: auto;
       display: block;
       transform-origin: center center;
       opacity: 0.2;
+      position: relative;
+      z-index: 2;
       transition: opacity 420ms var(--ease), transform 420ms var(--ease);
     }
 
@@ -171,6 +214,45 @@
 
     body.route-overview.loaded .car-bg svg {
       animation: silhouetteBloom 1700ms var(--ease) forwards, silhouetteIdle 9s 1700ms ease-in-out infinite;
+    }
+
+    .car-bg .car-shell {
+      filter: drop-shadow(0 0 12px rgba(255, 69, 92, 0.35));
+    }
+
+    .car-bg .trail-line {
+      stroke: url(#trailFade);
+      stroke-width: 3;
+      stroke-linecap: round;
+      opacity: 0.4;
+      stroke-dasharray: 160 220;
+      animation: trailShift 2400ms linear infinite;
+      animation-delay: var(--delay, 0s);
+    }
+
+    .car-bg .trail-line.alt {
+      stroke-width: 2;
+      opacity: 0.24;
+      stroke-dasharray: 120 260;
+      animation-duration: 3100ms;
+    }
+
+    .car-bg .front-wheel {
+      transform-origin: 420px 346px;
+    }
+
+    .car-bg .rear-wheel {
+      transform-origin: 1080px 346px;
+    }
+
+    body.route-overview.loaded .car-bg .front-wheel,
+    body.route-overview.loaded .car-bg .rear-wheel {
+      animation: wheelSpin 2300ms linear infinite;
+    }
+
+    .car-bg .accent-glint {
+      opacity: 0.56;
+      animation: bodyPulse 4.8s ease-in-out infinite;
     }
 
     .site {
@@ -1146,6 +1228,26 @@
       50% { transform: translateY(-3px); }
     }
 
+    @keyframes speedLines {
+      from { transform: translateX(0); }
+      to { transform: translateX(-72px); }
+    }
+
+    @keyframes trailShift {
+      from { stroke-dashoffset: 0; }
+      to { stroke-dashoffset: -760; }
+    }
+
+    @keyframes wheelSpin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(-360deg); }
+    }
+
+    @keyframes bodyPulse {
+      0%, 100% { opacity: 0.45; }
+      50% { opacity: 0.86; }
+    }
+
     @keyframes roadMove {
       from { background-position-x: 0; }
       to { background-position-x: 54px; }
@@ -1301,23 +1403,81 @@
   </div>
 
   <div class="car-bg" aria-hidden="true">
-    <svg viewBox="0 0 1500 460" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 1600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="carFill" x1="62" y1="128" x2="1428" y2="330" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#0a0b0f"/>
-          <stop offset="0.5" stop-color="#141722"/>
-          <stop offset="1" stop-color="#07080c"/>
+        <linearGradient id="trailFade" x1="1140" y1="250" x2="1600" y2="250" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#ff4a63" stop-opacity="0.28"/>
+          <stop offset="1" stop-color="#ff4a63" stop-opacity="0"/>
         </linearGradient>
+        <linearGradient id="carBody" x1="96" y1="140" x2="1468" y2="338" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#090a10"/>
+          <stop offset="0.48" stop-color="#3f0f19"/>
+          <stop offset="0.7" stop-color="#70192b"/>
+          <stop offset="1" stop-color="#0a0a10"/>
+        </linearGradient>
+        <linearGradient id="carShadow" x1="110" y1="344" x2="1452" y2="278" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#07080d" stop-opacity="0.92"/>
+          <stop offset="1" stop-color="#10060b" stop-opacity="0.35"/>
+        </linearGradient>
+        <linearGradient id="wingEdge" x1="1308" y1="188" x2="1388" y2="188" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#f2f3f6" stop-opacity="0.25"/>
+          <stop offset="1" stop-color="#f2f3f6" stop-opacity="0.72"/>
+        </linearGradient>
+        <radialGradient id="cockpitGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(878 236) rotate(16) scale(160 78)">
+          <stop stop-color="#ff5168" stop-opacity="0.26"/>
+          <stop offset="1" stop-color="#ff5168" stop-opacity="0"/>
+        </radialGradient>
+        <radialGradient id="wheelRim" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 346) rotate(90) scale(18)">
+          <stop stop-color="#0a0b0f"/>
+          <stop offset="1" stop-color="#f0f1f5" stop-opacity="0.84"/>
+        </radialGradient>
+        <radialGradient id="wheelRimRear" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1080 346) rotate(90) scale(18)">
+          <stop stop-color="#0a0b0f"/>
+          <stop offset="1" stop-color="#f0f1f5" stop-opacity="0.84"/>
+        </radialGradient>
       </defs>
-      <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" fill="url(#carFill)"/>
-      <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" stroke="#f8f8f8" stroke-opacity="0.28" stroke-width="2"/>
-      <path d="M1298 186H1384V262H1268L1298 186Z" fill="#090a0f"/>
-      <path d="M46 320H136L118 338H36L46 320Z" fill="#0a0b10"/>
-      <path d="M356 322C470 318 582 304 694 278C760 262 838 244 930 214" stroke="#ffffff" stroke-opacity="0.24" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="420" cy="346" r="48" fill="#0b0c0f"/>
-      <circle cx="1080" cy="346" r="48" fill="#0b0c0f"/>
-      <circle cx="420" cy="346" r="15" fill="#f8f8f8" fill-opacity="0.72"/>
-      <circle cx="1080" cy="346" r="15" fill="#f8f8f8" fill-opacity="0.72"/>
+      <g class="car-trails">
+        <path class="trail-line" style="--delay: 0s;" d="M1134 250H1584"/>
+        <path class="trail-line alt" style="--delay: -0.25s;" d="M1120 272H1596"/>
+        <path class="trail-line" style="--delay: -0.5s;" d="M1146 294H1568"/>
+        <path class="trail-line alt" style="--delay: -0.75s;" d="M1112 318H1600"/>
+        <path class="trail-line" style="--delay: -1s;" d="M1158 340H1574"/>
+      </g>
+
+      <g class="car-shell">
+        <ellipse cx="822" cy="356" rx="704" ry="22" fill="#090a0f" fill-opacity="0.65"/>
+        <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" fill="url(#carBody)"/>
+        <path d="M120 302L208 286H322L398 276L472 236H634L722 206H846L914 166H1092L1168 214H1248L1324 240L1390 252L1438 282L1458 300H1388L1348 278H1268L1240 332H1082L1048 278H874L842 332H684L650 286H520L474 332H338L288 300H206L154 322H110L120 302Z" fill="url(#carShadow)"/>
+        <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" stroke="#fafbff" stroke-opacity="0.28" stroke-width="2"/>
+        <path d="M1304 186H1388V264H1268L1304 186Z" fill="#090a0f"/>
+        <path d="M1304 186H1388" stroke="url(#wingEdge)" stroke-width="3" stroke-linecap="round"/>
+        <path d="M46 320H138L116 338H36L46 320Z" fill="#0a0b10"/>
+        <path d="M354 320C476 316 586 302 702 278C770 262 846 244 940 212" class="accent-glint" stroke="#ffd4db" stroke-width="3" stroke-linecap="round"/>
+        <path d="M524 232C610 214 722 196 838 188" class="accent-glint" stroke="#ff6c80" stroke-opacity="0.66" stroke-width="2.4" stroke-linecap="round"/>
+        <path d="M930 214C990 198 1052 204 1102 226" stroke="#f6f7fb" stroke-opacity="0.21" stroke-width="2" stroke-linecap="round"/>
+        <path d="M770 188L826 188L860 154L792 154L770 188Z" fill="#090a0f"/>
+        <ellipse cx="878" cy="236" rx="160" ry="76" fill="url(#cockpitGlow)"/>
+
+        <g class="front-wheel">
+          <circle cx="420" cy="346" r="57" fill="#08090d"/>
+          <circle cx="420" cy="346" r="43" fill="#0f111a"/>
+          <circle cx="420" cy="346" r="18" fill="url(#wheelRim)"/>
+          <path d="M420 304V388" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
+          <path d="M378 346H462" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
+          <path d="M392 318L448 374" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
+          <path d="M392 374L448 318" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
+        </g>
+
+        <g class="rear-wheel">
+          <circle cx="1080" cy="346" r="57" fill="#08090d"/>
+          <circle cx="1080" cy="346" r="43" fill="#0f111a"/>
+          <circle cx="1080" cy="346" r="18" fill="url(#wheelRimRear)"/>
+          <path d="M1080 304V388" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
+          <path d="M1038 346H1122" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
+          <path d="M1052 318L1108 374" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
+          <path d="M1052 374L1108 318" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
+        </g>
+      </g>
     </svg>
   </div>
 

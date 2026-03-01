@@ -1629,16 +1629,23 @@ def _dashboard_html() -> str:
   <div class="loading-screen" id="loadingScreen">
     <div class="loading-scene">
       <div class="loading-track" aria-hidden="true">
-        <svg class="loading-car" viewBox="0 0 320 96" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 63L22 58L40 55H56L74 53L92 43H126L146 37H174L188 30H230L248 40H262L280 47L296 50L306 58L314 66H294L286 60H266L258 74H224L216 60H178L170 74H136L128 62H100L90 74H64L56 66H44L34 72H16L12 63Z" fill="#08090c"/>
-          <path d="M12 63L22 58L40 55H56L74 53L92 43H126L146 37H174L188 30H230L248 40H262L280 47L296 50L306 58L314 66H294L286 60H266L258 74H224L216 60H178L170 74H136L128 62H100L90 74H64L56 66H44L34 72H16L12 63Z" stroke="#e9e9e9" stroke-opacity="0.48"/>
-          <path d="M270 36H290V60H262L270 36Z" fill="#0a0b10"/>
-          <path d="M4 68H24L20 74H2L4 68Z" fill="#0a0b10"/>
-          <path d="M102 58C130 56 156 51 184 44C198 41 214 36 228 33" stroke="#ffffff" stroke-opacity="0.28" stroke-width="1.8" stroke-linecap="round"/>
-          <circle cx="90" cy="76" r="12" fill="#0a0b10"/>
-          <circle cx="228" cy="76" r="12" fill="#0a0b10"/>
-          <circle cx="90" cy="76" r="4.2" fill="#f2f2f2" fill-opacity="0.72"/>
-          <circle cx="228" cy="76" r="4.2" fill="#f2f2f2" fill-opacity="0.72"/>
+        <svg class="loading-car" viewBox="0 0 900 340" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20 160H126L140 208H92L108 292H44L20 236V160Z" fill="#08090c"/>
+          <circle cx="136" cy="258" r="78" fill="#06070b"/>
+          <circle cx="700" cy="252" r="74" fill="#06070b"/>
+          <path d="M158 228L186 196L316 146L474 146L552 154L624 174L696 174L744 188L784 214L748 228L674 228L634 238L584 256L522 272L308 274L224 270L178 252L158 228Z" fill="#08090c"/>
+          <path d="M314 146L394 110H474L528 118L512 148L430 170H314V146Z" fill="#08090c"/>
+          <path d="M540 178C565 158 614 154 643 176L674 205H632L616 186H578L566 205H542L540 178Z" fill="#08090c"/>
+          <path d="M252 274H678L730 272L746 282H690L662 292H246L252 274Z" fill="#06070b"/>
+          <path d="M742 228L886 266L880 286L734 278L712 256L742 228Z" fill="#06070b"/>
+          <path d="M770 286H900L892 312H742L736 300L770 286Z" fill="#06070b"/>
+          <path d="M12 312H874L860 320H12V312Z" fill="#06070b"/>
+          <path d="M188 232C258 228 336 208 412 182C485 158 560 156 636 174" stroke="#ffffff" stroke-opacity="0.28" stroke-width="7" stroke-linecap="round"/>
+          <path d="M252 252C370 248 488 236 594 206" stroke="#ffffff" stroke-opacity="0.23" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="136" cy="258" r="48" stroke="#f3f7ff" stroke-opacity="0.44" stroke-width="6"/>
+          <circle cx="700" cy="252" r="46" stroke="#f3f7ff" stroke-opacity="0.42" stroke-width="6"/>
+          <circle cx="136" cy="258" r="30" fill="#f2f2f2" fill-opacity="0.72"/>
+          <circle cx="700" cy="252" r="28" fill="#f2f2f2" fill-opacity="0.72"/>
         </svg>
       </div>
       <p class="loading-text">Preparing race strategy interface</p>
@@ -1647,15 +1654,23 @@ def _dashboard_html() -> str:
 
   <div class="car-bg" aria-hidden="true">
     <div class="motion-layer"></div>
-    <svg class="car-photo silhouette" viewBox="0 0 320 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <path class="silhouette-shell" d="M12 63L22 58L40 55H56L74 53L92 43H126L146 37H174L188 30H230L248 40H262L280 47L296 50L306 58L314 66H294L286 60H266L258 74H224L216 60H178L170 74H136L128 62H100L90 74H64L56 66H44L34 72H16L12 63Z"/>
-      <path class="silhouette-wing" d="M270 36H290V60H262L270 36Z"/>
-      <path class="silhouette-floor" d="M4 68H24L20 74H2L4 68Z"/>
-      <path class="silhouette-line" d="M102 58C130 56 156 51 184 44C198 41 214 36 228 33"/>
-      <circle class="silhouette-wheel" cx="90" cy="76" r="12"/>
-      <circle class="silhouette-wheel" cx="228" cy="76" r="12"/>
-      <circle class="silhouette-hub" cx="90" cy="76" r="4.2"/>
-      <circle class="silhouette-hub" cx="228" cy="76" r="4.2"/>
+    <svg class="car-photo silhouette" viewBox="0 0 900 340" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path class="silhouette-wing" d="M20 160H126L140 208H92L108 292H44L20 236V160Z"/>
+      <circle class="silhouette-wheel" cx="136" cy="258" r="78"/>
+      <circle class="silhouette-wheel" cx="700" cy="252" r="74"/>
+      <path class="silhouette-shell" d="M158 228L186 196L316 146L474 146L552 154L624 174L696 174L744 188L784 214L748 228L674 228L634 238L584 256L522 272L308 274L224 270L178 252L158 228Z"/>
+      <path class="silhouette-shell" d="M314 146L394 110H474L528 118L512 148L430 170H314V146Z"/>
+      <path class="silhouette-shell" d="M540 178C565 158 614 154 643 176L674 205H632L616 186H578L566 205H542L540 178Z"/>
+      <path class="silhouette-floor" d="M252 274H678L730 272L746 282H690L662 292H246L252 274Z"/>
+      <path class="silhouette-wing" d="M742 228L886 266L880 286L734 278L712 256L742 228Z"/>
+      <path class="silhouette-wing" d="M770 286H900L892 312H742L736 300L770 286Z"/>
+      <path class="silhouette-floor" d="M12 312H874L860 320H12V312Z"/>
+      <path class="silhouette-line" d="M188 232C258 228 336 208 412 182C485 158 560 156 636 174"/>
+      <path class="silhouette-line" d="M252 252C370 248 488 236 594 206"/>
+      <circle class="silhouette-line" cx="136" cy="258" r="48"/>
+      <circle class="silhouette-line" cx="700" cy="252" r="46"/>
+      <circle class="silhouette-hub" cx="136" cy="258" r="30"/>
+      <circle class="silhouette-hub" cx="700" cy="252" r="28"/>
     </svg>
   </div>
 

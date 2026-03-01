@@ -209,8 +209,8 @@ def _dashboard_html() -> str:
       --line-strong: rgba(255, 255, 255, 0.2);
       --ink: #f5f5f5;
       --muted: #a6a6a6;
-      --accent: #ff3147;
-      --accent-soft: rgba(255, 49, 71, 0.24);
+      --accent: #ff8a00;
+      --accent-soft: rgba(255, 138, 0, 0.24);
       --good: #63d49a;
       --warn: #f4c16f;
       --bad: #f67480;
@@ -230,7 +230,7 @@ def _dashboard_html() -> str:
       font-family: "Sora", "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(90% 90% at 90% -10%, rgba(255, 49, 71, 0.2) 0%, transparent 52%),
+        radial-gradient(90% 90% at 90% -10%, rgba(255, 138, 0, 0.2) 0%, transparent 52%),
         radial-gradient(80% 70% at -10% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 42%),
         linear-gradient(170deg, #020202 0%, #050505 60%, #020202 100%);
       min-height: 100vh;
@@ -260,7 +260,7 @@ def _dashboard_html() -> str:
       inset: 0;
       z-index: 100;
       background:
-        radial-gradient(90% 90% at 50% -10%, rgba(255,49,71,0.2) 0%, rgba(255,49,71,0) 55%),
+        radial-gradient(90% 90% at 50% -10%, rgba(255, 138, 0,0.2) 0%, rgba(255, 138, 0,0) 55%),
         linear-gradient(180deg, #050505 0%, #090909 100%);
       display: grid;
       place-items: center;
@@ -310,7 +310,7 @@ def _dashboard_html() -> str:
       width: 180px;
       height: 58px;
       animation: driveOff 1800ms var(--ease) forwards;
-      filter: drop-shadow(0 0 14px rgba(255,49,71,0.35));
+      filter: drop-shadow(0 0 14px rgba(255, 138, 0,0.35));
     }
 
     .loading-text {
@@ -332,6 +332,8 @@ def _dashboard_html() -> str:
       --parallax-x: 0px;
       --parallax-y: 0px;
       --hero-glow: 1;
+      --hero-progress: 0;
+      --hero-fade: 1;
       isolation: isolate;
       transform: translate3d(var(--parallax-x), var(--parallax-y), 0);
       filter: drop-shadow(0 0 24px rgba(0, 0, 0, 0.58));
@@ -341,10 +343,10 @@ def _dashboard_html() -> str:
     .car-bg::before {
       content: "";
       position: absolute;
-      inset: 12% -12% 18% 32%;
+      inset: 12% -12% 18% 34%;
       background: repeating-linear-gradient(
         96deg,
-        rgba(255, 73, 94, 0.2) 0 2px,
+        rgba(255, 164, 31, 0.22) 0 2px,
         transparent 2px 24px
       );
       opacity: 0;
@@ -357,10 +359,10 @@ def _dashboard_html() -> str:
     .car-bg::after {
       content: "";
       position: absolute;
-      inset: 24% -8% 18% 12%;
+      inset: 24% -8% 18% 14%;
       background:
-        radial-gradient(56% 44% at 48% 54%, rgba(255, 52, 76, 0.38) 0%, rgba(255, 52, 76, 0.12) 45%, rgba(255, 52, 76, 0) 100%),
-        radial-gradient(42% 30% at 82% 56%, rgba(255, 52, 76, 0.18) 0%, rgba(255, 52, 76, 0) 100%);
+        radial-gradient(58% 44% at 46% 54%, rgba(255, 145, 20, 0.44) 0%, rgba(255, 145, 20, 0.14) 45%, rgba(255, 145, 20, 0) 100%),
+        radial-gradient(44% 30% at 84% 56%, rgba(255, 166, 45, 0.2) 0%, rgba(255, 166, 45, 0) 100%);
       opacity: 0;
       z-index: 0;
       pointer-events: none;
@@ -372,23 +374,41 @@ def _dashboard_html() -> str:
       right: -6px;
       top: 74px;
       width: min(1460px, 108vw);
-      opacity: calc(0.24 + (var(--hero-glow) * 0.76));
+      opacity: calc((0.06 + (var(--hero-glow) * 0.9)) * var(--hero-fade));
       filter:
-        drop-shadow(0 0 calc(26px + (var(--hero-glow) * 90px)) rgba(255, 66, 91, calc(0.1 + (var(--hero-glow) * 0.54))))
+        drop-shadow(0 0 calc(26px + (var(--hero-glow) * 90px)) rgba(255, 154, 24, calc(0.14 + (var(--hero-glow) * 0.56))))
         drop-shadow(0 0 40px rgba(0, 0, 0, 0.6));
     }
 
     body.route-overview .car-bg::before {
-      opacity: calc(0.05 + (var(--hero-glow) * 0.34));
+      opacity: calc((0.02 + (var(--hero-glow) * 0.34)) * var(--hero-fade));
       animation: speedLines 2100ms linear infinite;
     }
 
     body.route-overview .car-bg::after {
-      opacity: calc(0.06 + (var(--hero-glow) * 0.48));
-      transform: scale(calc(0.94 + (var(--hero-glow) * 0.08)));
+      opacity: calc((0.03 + (var(--hero-glow) * 0.5)) * var(--hero-fade));
+      transform: scale(calc(0.92 + (var(--hero-glow) * 0.1)));
     }
 
-    .car-bg svg {
+    .car-bg .motion-layer {
+      position: absolute;
+      inset: 18% -12% 16% 28%;
+      pointer-events: none;
+      z-index: 1;
+      opacity: 0;
+      background:
+        linear-gradient(96deg, rgba(255, 179, 74, 0.5) 0%, rgba(255, 179, 74, 0) 36%),
+        repeating-linear-gradient(96deg, rgba(255, 154, 24, 0.14) 0 2px, transparent 2px 18px);
+      mix-blend-mode: screen;
+      transform: translateX(0);
+    }
+
+    body.route-overview .car-bg .motion-layer {
+      opacity: calc((0.03 + (var(--hero-glow) * 0.35)) * var(--hero-fade));
+      animation: motionSweep 3200ms linear infinite;
+    }
+
+    .car-bg .car-photo {
       width: 100%;
       height: auto;
       display: block;
@@ -396,63 +416,32 @@ def _dashboard_html() -> str:
       opacity: 0.2;
       position: relative;
       z-index: 2;
-      transition: opacity 420ms var(--ease), transform 420ms var(--ease);
+      filter: saturate(1.12) contrast(1.1) brightness(0.92);
+      transition: opacity 420ms var(--ease), transform 420ms var(--ease), filter 420ms var(--ease);
     }
 
-    body.route-overview .car-bg svg {
-      opacity: calc(0.2 + (var(--hero-glow) * 0.8));
-      transform: scale(calc(0.92 + (var(--hero-glow) * 0.2)));
+    body.route-overview .car-bg .car-photo {
+      opacity: calc((0.16 + (var(--hero-glow) * 0.84)) * var(--hero-fade));
+      transform:
+        translateX(calc(var(--hero-progress) * -120px))
+        scale(calc(0.92 + (var(--hero-glow) * 0.22)));
+      filter:
+        blur(calc(var(--hero-progress) * 5px))
+        saturate(calc(1.06 + (var(--hero-glow) * 0.24)))
+        contrast(calc(1.04 + (var(--hero-glow) * 0.18)))
+        brightness(calc(0.9 + (var(--hero-glow) * 0.18)));
     }
 
-    body.route-overview.loaded.pop-phase .car-bg svg {
+    body.route-overview.loaded.pop-phase .car-bg .car-photo {
       animation: carPopToBackground 1500ms var(--ease) forwards;
     }
 
-    body.route-overview.loaded:not(.pop-phase) .car-bg svg {
+    body.route-overview.loaded:not(.pop-phase) .car-bg .car-photo {
       animation: silhouetteSettle 900ms var(--ease) forwards, silhouetteIdle 9s 900ms ease-in-out infinite;
     }
 
     body.route-overview.loaded.pop-phase .car-bg::after {
       animation: backgroundFlash 1300ms var(--ease) both;
-    }
-
-    .car-bg .car-shell {
-      filter: drop-shadow(0 0 12px rgba(255, 69, 92, 0.35));
-    }
-
-    .car-bg .trail-line {
-      stroke: url(#trailFade);
-      stroke-width: 3;
-      stroke-linecap: round;
-      opacity: 0.4;
-      stroke-dasharray: 160 220;
-      animation: trailShift 2400ms linear infinite;
-      animation-delay: var(--delay, 0s);
-    }
-
-    .car-bg .trail-line.alt {
-      stroke-width: 2;
-      opacity: 0.24;
-      stroke-dasharray: 120 260;
-      animation-duration: 3100ms;
-    }
-
-    .car-bg .front-wheel {
-      transform-origin: 420px 346px;
-    }
-
-    .car-bg .rear-wheel {
-      transform-origin: 1080px 346px;
-    }
-
-    body.route-overview.loaded .car-bg .front-wheel,
-    body.route-overview.loaded .car-bg .rear-wheel {
-      animation: wheelSpin 2300ms linear infinite;
-    }
-
-    .car-bg .accent-glint {
-      opacity: 0.56;
-      animation: bodyPulse 4.8s ease-in-out infinite;
     }
 
     .site {
@@ -486,7 +475,7 @@ def _dashboard_html() -> str:
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, transparent 20%, rgba(255, 49, 71, 0.08) 50%, transparent 80%);
+      background: linear-gradient(120deg, transparent 20%, rgba(255, 138, 0, 0.08) 50%, transparent 80%);
       transform: translateX(-50%);
       animation: sweep 5.8s ease-in-out infinite;
       pointer-events: none;
@@ -544,7 +533,7 @@ def _dashboard_html() -> str:
     .hero-note {
       margin: 0;
       font-size: clamp(20px, 2.4vw, 34px);
-      color: #f2d7db;
+      color: #ffd8a3;
       max-width: 980px;
       text-align: left;
       letter-spacing: -0.01em;
@@ -600,9 +589,9 @@ def _dashboard_html() -> str:
     }
 
     .btn.primary {
-      border-color: rgba(255, 49, 71, 0.55);
-      background: linear-gradient(120deg, rgba(255, 49, 71, 0.24), rgba(255, 49, 71, 0.06));
-      color: #ffeef1;
+      border-color: rgba(255, 138, 0, 0.55);
+      background: linear-gradient(120deg, rgba(255, 138, 0, 0.24), rgba(255, 138, 0, 0.06));
+      color: #fff3e4;
     }
 
     .btn.warn {
@@ -658,7 +647,7 @@ def _dashboard_html() -> str:
       right: 12px;
       bottom: 4px;
       height: 1px;
-      background: rgba(255,49,71,0.75);
+      background: rgba(255, 138, 0,0.75);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 240ms var(--ease);
@@ -670,9 +659,9 @@ def _dashboard_html() -> str:
     }
 
     .tab.active {
-      border-color: rgba(255, 49, 71, 0.45);
-      background: rgba(255, 49, 71, 0.16);
-      color: #fff2f4;
+      border-color: rgba(255, 138, 0, 0.45);
+      background: rgba(255, 138, 0, 0.16);
+      color: #fff3df;
     }
 
     .tab.active::after {
@@ -700,14 +689,18 @@ def _dashboard_html() -> str:
 
     .reveal-on-scroll {
       opacity: 0;
-      transform: translateY(30px) scale(0.99);
-      filter: blur(3px);
-      transition: transform 820ms var(--ease), opacity 820ms var(--ease), filter 820ms var(--ease);
+      transform: translateY(52px) scale(0.985);
+      filter: blur(8px);
+      transition:
+        transform 920ms var(--ease) var(--reveal-delay, 0ms),
+        opacity 920ms var(--ease) var(--reveal-delay, 0ms),
+        filter 920ms var(--ease) var(--reveal-delay, 0ms);
+      will-change: transform, opacity, filter;
     }
 
     .reveal-on-scroll.in-view {
       opacity: 1;
-      transform: translateY(0);
+      transform: translateY(0) scale(1);
       filter: blur(0);
     }
 
@@ -731,7 +724,7 @@ def _dashboard_html() -> str:
       border-radius: 999px;
       right: -130px;
       top: -120px;
-      background: radial-gradient(circle, rgba(255,49,71,0.26) 0%, rgba(255,49,71,0) 72%);
+      background: radial-gradient(circle, rgba(255, 138, 0,0.26) 0%, rgba(255, 138, 0,0) 72%);
       pointer-events: none;
       animation: breathe 7s ease-in-out infinite;
     }
@@ -820,7 +813,7 @@ def _dashboard_html() -> str:
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(100deg, rgba(255,49,71,0.06), transparent 30%, transparent 70%, rgba(255,49,71,0.06));
+      background: linear-gradient(100deg, rgba(255, 138, 0,0.06), transparent 30%, transparent 70%, rgba(255, 138, 0,0.06));
       pointer-events: none;
     }
 
@@ -888,7 +881,7 @@ def _dashboard_html() -> str:
 
     .pop-item:hover {
       transform: translateY(-2px);
-      border-color: rgba(255, 49, 71, 0.4);
+      border-color: rgba(255, 138, 0, 0.4);
       background: rgba(20,12,13,0.9);
     }
 
@@ -897,7 +890,7 @@ def _dashboard_html() -> str:
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 0.11em;
-      color: #f2c0c7;
+      color: #ffd08a;
       font-family: var(--mono);
     }
 
@@ -926,7 +919,7 @@ def _dashboard_html() -> str:
 
     .story-card:hover {
       transform: translateY(-3px);
-      border-color: rgba(255, 49, 71, 0.34);
+      border-color: rgba(255, 138, 0, 0.34);
       background: rgba(20, 12, 13, 0.92);
     }
 
@@ -939,7 +932,7 @@ def _dashboard_html() -> str:
       font-size: 14px;
       letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: #f1b8bf;
+      color: #ffcc8d;
     }
 
     .story-card p {
@@ -970,7 +963,7 @@ def _dashboard_html() -> str:
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, transparent 30%, rgba(255,49,71,0.06) 50%, transparent 70%);
+      background: linear-gradient(120deg, transparent 30%, rgba(255, 138, 0,0.06) 50%, transparent 70%);
       transform: translateX(-80%);
       animation: sheenPanel 9s ease-in-out infinite;
       pointer-events: none;
@@ -1016,9 +1009,9 @@ def _dashboard_html() -> str:
       width: 0%;
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #b7283a 0%, #ff3147 100%);
+      background: linear-gradient(90deg, #c26a00 0%, #ff8a00 100%);
       transition: width 860ms var(--ease);
-      box-shadow: 0 0 12px rgba(255,49,71,0.35);
+      box-shadow: 0 0 12px rgba(255, 138, 0,0.35);
     }
 
     .spark {
@@ -1070,8 +1063,8 @@ def _dashboard_html() -> str:
     }
 
     input[type='search']:focus, select:focus {
-      border-color: rgba(255,49,71,0.6);
-      box-shadow: 0 0 0 3px rgba(255,49,71,0.2);
+      border-color: rgba(255, 138, 0,0.6);
+      box-shadow: 0 0 0 3px rgba(255, 138, 0,0.2);
     }
 
     .table-wrap {
@@ -1134,8 +1127,8 @@ def _dashboard_html() -> str:
     }
 
     tbody tr.reveal { animation: rise 360ms var(--delay, 0ms) var(--ease) forwards; }
-    tbody tr:hover { background: rgba(255,49,71,0.08); }
-    tbody tr:active { background: rgba(255,49,71,0.14); }
+    tbody tr:hover { background: rgba(255, 138, 0,0.08); }
+    tbody tr:active { background: rgba(255, 138, 0,0.14); }
 
     .race-main {
       display: block;
@@ -1397,14 +1390,14 @@ def _dashboard_html() -> str:
     }
 
     @keyframes carPopToBackground {
-      0% { transform: scale(0.84) translateX(42px) translateY(8px); opacity: 0.12; }
-      36% { transform: scale(1.36) translateX(-24px) translateY(-4px); opacity: 0.96; }
-      100% { transform: scale(1.1) translateX(-10px) translateY(0); opacity: 0.34; }
+      0% { transform: scale(0.84) translateX(42px) translateY(8px); }
+      36% { transform: scale(1.36) translateX(-24px) translateY(-4px); }
+      100% { transform: scale(1.1) translateX(-10px) translateY(0); }
     }
 
     @keyframes silhouetteSettle {
-      0% { transform: scale(1.1) translateX(-10px) translateY(0); opacity: 0.34; }
-      100% { transform: scale(1.12) translateX(0) translateY(0); opacity: 0.36; }
+      0% { transform: scale(1.1) translateX(-10px) translateY(0); }
+      100% { transform: scale(1.12) translateX(0) translateY(0); }
     }
 
     @keyframes silhouetteIdle {
@@ -1438,6 +1431,11 @@ def _dashboard_html() -> str:
       to { transform: translateX(-72px); }
     }
 
+    @keyframes motionSweep {
+      from { transform: translateX(0); }
+      to { transform: translateX(-92px); }
+    }
+
     @keyframes trailShift {
       from { stroke-dashoffset: 0; }
       to { stroke-dashoffset: -760; }
@@ -1456,7 +1454,7 @@ def _dashboard_html() -> str:
     @keyframes backgroundFlash {
       0% { opacity: 0.08; transform: scale(0.9); }
       40% { opacity: 0.8; transform: scale(1.03); }
-      100% { opacity: calc(0.06 + (var(--hero-glow) * 0.48)); transform: scale(calc(0.94 + (var(--hero-glow) * 0.08))); }
+      100% { opacity: calc((0.03 + (var(--hero-glow) * 0.5)) * var(--hero-fade)); transform: scale(calc(0.92 + (var(--hero-glow) * 0.1))); }
     }
 
     @keyframes roadMove {
@@ -1566,7 +1564,7 @@ def _dashboard_html() -> str:
         right: -76px;
         top: 88px;
         width: 1180px;
-        opacity: calc(0.24 + (var(--hero-glow) * 0.7));
+        opacity: calc((0.06 + (var(--hero-glow) * 0.84)) * var(--hero-fade));
       }
 
       .drawer-grid {
@@ -1586,7 +1584,8 @@ def _dashboard_html() -> str:
       }
 
       .car-bg,
-      .car-bg svg {
+      .car-bg .car-photo,
+      .car-bg .motion-layer {
         transform: none !important;
         animation: none !important;
       }
@@ -1614,82 +1613,12 @@ def _dashboard_html() -> str:
   </div>
 
   <div class="car-bg" aria-hidden="true">
-    <svg viewBox="0 0 1600 520" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <linearGradient id="trailFade" x1="1140" y1="250" x2="1600" y2="250" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#ff4a63" stop-opacity="0.28"/>
-          <stop offset="1" stop-color="#ff4a63" stop-opacity="0"/>
-        </linearGradient>
-        <linearGradient id="carBody" x1="96" y1="140" x2="1468" y2="338" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#090a10"/>
-          <stop offset="0.48" stop-color="#3f0f19"/>
-          <stop offset="0.7" stop-color="#70192b"/>
-          <stop offset="1" stop-color="#0a0a10"/>
-        </linearGradient>
-        <linearGradient id="carShadow" x1="110" y1="344" x2="1452" y2="278" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#07080d" stop-opacity="0.92"/>
-          <stop offset="1" stop-color="#10060b" stop-opacity="0.35"/>
-        </linearGradient>
-        <linearGradient id="wingEdge" x1="1308" y1="188" x2="1388" y2="188" gradientUnits="userSpaceOnUse">
-          <stop stop-color="#f2f3f6" stop-opacity="0.25"/>
-          <stop offset="1" stop-color="#f2f3f6" stop-opacity="0.72"/>
-        </linearGradient>
-        <radialGradient id="cockpitGlow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(878 236) rotate(16) scale(160 78)">
-          <stop stop-color="#ff5168" stop-opacity="0.26"/>
-          <stop offset="1" stop-color="#ff5168" stop-opacity="0"/>
-        </radialGradient>
-        <radialGradient id="wheelRim" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(420 346) rotate(90) scale(18)">
-          <stop stop-color="#0a0b0f"/>
-          <stop offset="1" stop-color="#f0f1f5" stop-opacity="0.84"/>
-        </radialGradient>
-        <radialGradient id="wheelRimRear" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1080 346) rotate(90) scale(18)">
-          <stop stop-color="#0a0b0f"/>
-          <stop offset="1" stop-color="#f0f1f5" stop-opacity="0.84"/>
-        </radialGradient>
-      </defs>
-      <g class="car-trails">
-        <path class="trail-line" style="--delay: 0s;" d="M1134 250H1584"/>
-        <path class="trail-line alt" style="--delay: -0.25s;" d="M1120 272H1596"/>
-        <path class="trail-line" style="--delay: -0.5s;" d="M1146 294H1568"/>
-        <path class="trail-line alt" style="--delay: -0.75s;" d="M1112 318H1600"/>
-        <path class="trail-line" style="--delay: -1s;" d="M1158 340H1574"/>
-      </g>
-
-      <g class="car-shell">
-        <ellipse cx="822" cy="356" rx="704" ry="22" fill="#090a0f" fill-opacity="0.65"/>
-        <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" fill="url(#carBody)"/>
-        <path d="M120 302L208 286H322L398 276L472 236H634L722 206H846L914 166H1092L1168 214H1248L1324 240L1390 252L1438 282L1458 300H1388L1348 278H1268L1240 332H1082L1048 278H874L842 332H684L650 286H520L474 332H338L288 300H206L154 322H110L120 302Z" fill="url(#carShadow)"/>
-        <path d="M72 298L124 282L208 270H292L372 262L450 218H610L706 188H836L904 144H1098L1188 196H1262L1338 226L1410 240L1452 274L1480 306H1392L1358 274H1268L1238 334H1086L1054 276H878L848 334H676L646 284H512L468 334H320L282 296H198L150 324H88L72 298Z" stroke="#fafbff" stroke-opacity="0.28" stroke-width="2"/>
-        <path d="M1304 186H1388V264H1268L1304 186Z" fill="#090a0f"/>
-        <path d="M1304 186H1388" stroke="url(#wingEdge)" stroke-width="3" stroke-linecap="round"/>
-        <path d="M46 320H138L116 338H36L46 320Z" fill="#0a0b10"/>
-        <path d="M354 320C476 316 586 302 702 278C770 262 846 244 940 212" class="accent-glint" stroke="#ffd4db" stroke-width="3" stroke-linecap="round"/>
-        <path d="M524 232C610 214 722 196 838 188" class="accent-glint" stroke="#ff6c80" stroke-opacity="0.66" stroke-width="2.4" stroke-linecap="round"/>
-        <path d="M930 214C990 198 1052 204 1102 226" stroke="#f6f7fb" stroke-opacity="0.21" stroke-width="2" stroke-linecap="round"/>
-        <path d="M770 188L826 188L860 154L792 154L770 188Z" fill="#090a0f"/>
-        <ellipse cx="878" cy="236" rx="160" ry="76" fill="url(#cockpitGlow)"/>
-
-        <g class="front-wheel">
-          <circle cx="420" cy="346" r="57" fill="#08090d"/>
-          <circle cx="420" cy="346" r="43" fill="#0f111a"/>
-          <circle cx="420" cy="346" r="18" fill="url(#wheelRim)"/>
-          <path d="M420 304V388" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
-          <path d="M378 346H462" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
-          <path d="M392 318L448 374" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
-          <path d="M392 374L448 318" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
-        </g>
-
-        <g class="rear-wheel">
-          <circle cx="1080" cy="346" r="57" fill="#08090d"/>
-          <circle cx="1080" cy="346" r="43" fill="#0f111a"/>
-          <circle cx="1080" cy="346" r="18" fill="url(#wheelRimRear)"/>
-          <path d="M1080 304V388" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
-          <path d="M1038 346H1122" stroke="#f1f2f6" stroke-opacity="0.38" stroke-width="2"/>
-          <path d="M1052 318L1108 374" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
-          <path d="M1052 374L1108 318" stroke="#f1f2f6" stroke-opacity="0.28" stroke-width="2"/>
-        </g>
-      </g>
-    </svg>
+    <div class="motion-layer"></div>
+    <img
+      class="car-photo"
+      src="https://p.turbosquid.com/ts-thumb/Dr/06s7Jw/8G/mcl39_0000/jpg/1741934846/1920x1080/fit_q87/fca87e4f2ec80d23c7eb802adccfb4546ee348b4/mcl39_0000.jpg"
+      alt="McLaren MCL39 Formula 1 car render"
+    />
   </div>
 
   <div class="site">
@@ -2030,24 +1959,33 @@ def _dashboard_html() -> str:
     function updateHeroSilhouetteGlow() {
       const car = document.querySelector('.car-bg');
       if (!car) return;
+      const setCarState = (glow, progress) => {
+        const safeGlow = clamp(glow, 0, 1);
+        const safeProgress = clamp(progress, 0, 1);
+        const fade = clamp(1 - (safeProgress * 1.08), 0.04, 1);
+        car.style.setProperty('--hero-glow', safeGlow.toFixed(3));
+        car.style.setProperty('--hero-progress', safeProgress.toFixed(3));
+        car.style.setProperty('--hero-fade', fade.toFixed(3));
+      };
+
       if (!document.body.classList.contains('route-overview')) {
-        car.style.setProperty('--hero-glow', '0.16');
+        setCarState(0.16, 1);
         return;
       }
       const hero = document.querySelector('.hero');
       if (!hero) {
-        car.style.setProperty('--hero-glow', '1');
+        setCarState(1, 0);
         return;
       }
       if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        car.style.setProperty('--hero-glow', '0.72');
+        setCarState(0.72, 0.24);
         return;
       }
       const rect = hero.getBoundingClientRect();
       const fadeDistance = Math.max(window.innerHeight * 0.95, rect.height * 0.82, 1);
       const progress = clamp(Math.max(0, -rect.top) / fadeDistance, 0, 1);
-      const glow = 1 - (progress * 0.76);
-      car.style.setProperty('--hero-glow', glow.toFixed(3));
+      const glow = 1 - (progress * 0.84);
+      setCarState(glow, progress);
     }
 
     function initHeroSilhouetteScroll() {
@@ -2065,7 +2003,9 @@ def _dashboard_html() -> str:
     }
 
     function initScrollReveal() {
-      const nodes = Array.from(document.querySelectorAll('.reveal-on-scroll:not(.in-view)'));
+      const activePage = document.querySelector('.page.active');
+      if (!activePage) return;
+      const nodes = Array.from(activePage.querySelectorAll('.reveal-on-scroll:not(.in-view)'));
       if (!nodes.length) return;
 
       if (!scrollObserver) {
@@ -2075,10 +2015,13 @@ def _dashboard_html() -> str:
             entry.target.classList.add('in-view');
             scrollObserver.unobserve(entry.target);
           });
-        }, { threshold: 0.16, rootMargin: '0px 0px -8% 0px' });
+        }, { threshold: 0.2, rootMargin: '0px 0px -12% 0px' });
       }
 
-      nodes.forEach((node) => scrollObserver.observe(node));
+      nodes.forEach((node, index) => {
+        node.style.setProperty('--reveal-delay', `${Math.min(index * 120, 520)}ms`);
+        scrollObserver.observe(node);
+      });
     }
 
     function spawnRipple(target, clientX, clientY) {

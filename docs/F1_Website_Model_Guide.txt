@@ -1,0 +1,345 @@
+F1 Strategy Lab: Website and Model Guide
+Project scope: McLaren 2025 strategy prediction system
+
+============================================================
+1) What this project is
+============================================================
+This project is an end-to-end Formula 1 race strategy decision system.
+It combines motorsport telemetry-style features, weather features, and
+optional computer vision features, then trains models and runs Monte Carlo
+strategy simulations to produce race strategy recommendations for the 2025 season.
+
+The same outputs are rendered in a custom interactive website dashboard
+that runs locally and on Vercel.
+
+============================================================
+2) High-level architecture
+============================================================
+Core modules:
+- src/f1_strategy_lab/data
+  FastF1 ingestion, weather ingestion, synthetic fallback generation.
+- src/f1_strategy_lab/features
+  Feature preparation and inference alignment.
+- src/f1_strategy_lab/models
+  Pace model and contingency ranking model.
+- src/f1_strategy_lab/strategy
+  Candidate generation, Monte Carlo simulation, contingency evaluation,
+  fallback trigger logic, championship projection.
+- src/f1_strategy_lab/dashboard
+  Payload builder + website server/UI.
+
+Main pipeline entrypoint:
+- scripts/run_season_pipeline.py
+  Calls run_season_pipeline(...) in src/f1_strategy_lab/pipeline.py
+
+============================================================
+3) End-to-end process flow
+============================================================
+Step 1: Load config
+- From configs/mclaren_2025.yaml
+- Key values currently:
+  team=MCLAREN
+  target_driver=NOR
+  training_years=2021..2024
+  target_year=2025
+  model params: n_estimators=300, learning_rate=0.05, max_depth=4
+  simulation params: n_simulations=3000, pit_loss_seconds=21.5, etc.
+
+Step 2: Optional CV feature extraction
+- If videos_dir is passed, each video is parsed by OpenCV.
+- Extracted proxies:
+  cv_traffic_index, cv_grip_index, cv_rain_index, cv_visibility_index.
+- If no video or cv2 unavailable, defaults are used.
+
+Step 3: Build training dataset
+- Uses FastF1 for each event in training years.
+- Session preference for practice-like features: FP2, then FP3, then FP1.
+- Qualifying session: Q.
+- Race session R is used only in training to create targets.
+- Weather features are merged per event using Open-Meteo.
+- CV features are merged if available.
+
+Step 4: Prepare features and train pace model
+- Feature preparation fills numeric NaNs by median and categorical NaNs by mode.
+- Model: scikit-learn GradientBoostingRegressor in a pipeline with preprocessing.
+- Target: target_race_pace.
+- Validation metrics produced: MAE, RMSE, R2.
+- Saved artifact: reports/pace_model.joblib.
+
+Step 5: Build inference dataset for 2025
+- Same feature-building path, but without race targets.
+- If synthetic fallback is used, creates a 24-race shell.
+
+Step 6: Predict base pace per event
+- align_inference_features(...) ensures columns match training feature set.
+- model.predict(...) gives predicted_base_lap_sec per event.
+
+Step 7: Generate candidate strategies
+- One-stop candidates and two-stop candidates are generated.
+- Compounds are from config (SOFT/MEDIUM/HARD).
+- Pit windows are generated from lap-percentage heuristics.
+
+Step 8: Monte Carlo simulation and contingency analysis
+- For each candidate strategy, simulator estimates:
+  expected_race_time, p10/p90, robustness_window,
+  win_probability, expected_points, strategy_score.
+- Also evaluates contingency scenarios:
+  baseline, weather_change, engine_conservation,
+  driver_error_recovery, race_chaos.
+
+Step 9: Select primary + fallback strategies
+- Primary = best baseline strategy.
+- Fallback #2 and #3 = selected using ContingencyRanker output.
+- Each fallback has trigger text generated from strongest contingency profile.
+
+Step 10: Write outputs
+- reports/training_features.csv
+- reports/model_metrics.json
+- reports/pace_model.joblib
+- reports/strategy_recommendations_2025.csv
+- reports/championship_projection_2025.json
+- reports/run_summary.json
+
+============================================================
+4) What data goes in
+============================================================
+A) Config data
+- Team/driver/year ranges, model params, simulation params, CV params,
+  strategy compound set, and file paths.
+
+B) FastF1 event/session data
+- Practice + qualifying lap data and metadata.
+- Team/driver filtering and accurate-lap filtering.
+- Degradation estimates from lap progression by compound.
+- Fuel proxy from early-vs-late stint pace.
+
+C) Weather data (Open-Meteo)
+- weather_temp_c
+- weather_humidity
+- weather_precip_mm
+- weather_wind_kmh
+- weather_pressure_hpa
+- Cached in local weather cache path.
+
+D) Optional CV data from videos
+- cv_traffic_index
+- cv_grip_index
+- cv_rain_index
+- cv_visibility_index
+
+E) Synthetic fallback data (if enabled)
+- Randomized but structured features for pace, weather, degradation,
+  and CV-like signals to keep the pipeline runnable when live data is unavailable.
+
+============================================================
+5) Exactly what is used to train the models
+============================================================
+Primary supervised model: PaceModel
+- File: src/f1_strategy_lab/models/pace_model.py
+- Model type: GradientBoostingRegressor
+- Training target: target_race_pace
+- Train/validation split: train_test_split using model.test_size
+- Preprocessing:
+  - numeric: SimpleImputer(median) + StandardScaler
+  - categorical: SimpleImputer(most_frequent) + OneHotEncoder(ignore unknown)
+
+Contingency ranking model: ContingencyRanker
+- File: src/f1_strategy_lab/models/contingency_ranker.py
+- Model type: GradientBoostingRegressor (when enough rows)
+- Purpose: rank candidate strategies by resilience across scenarios
+- If too few strategies (<12 rows), uses deterministic composite scoring fallback.
+
+============================================================
+6) Strategy simulation details
+============================================================
+File: src/f1_strategy_lab/strategy/simulator.py
+
+For each lap in each simulation, the race-time model adds terms for:
+- base pace
+- tire degradation by compound and stint age
+- fuel effect
+- traffic effect
+- weather/rain effect
+- random uncertainty
+- pit loss (with safety-car probability adjustment)
+
+Candidate outputs:
+- expected_race_time
+- p10_time / p90_time
+- robustness_window (p90-p10)
+- win_probability
+- expected_points
+- strategy_score = expected_points - 0.02 * robustness_window
+
+============================================================
+7) Contingency and fallback logic
+============================================================
+File: src/f1_strategy_lab/strategy/contingency.py
+
+Scenarios:
+- baseline
+- weather_change
+- engine_conservation
+- driver_error_recovery
+- race_chaos
+
+Each scenario perturbs base conditions (lap delta, degradation multiplier,
+traffic delta, rain delta, pit loss delta, uncertainty scaling).
+
+Then the pipeline:
+- keeps best baseline strategy as primary
+- ranks remaining strategies for fallback robustness
+- chooses fallback #2 and #3
+- generates trigger text like:
+  "Weather change or sudden rain"
+  "Engine reliability concern"
+  "Driver error recovery"
+  "Safety car or race chaos"
+
+============================================================
+8) Output files and fields
+============================================================
+A) Training output file
+- reports/training_features.csv
+- Current run shape: 120 rows x 21 columns
+- Columns currently:
+  year, event_name, team, driver,
+  fp2_avg_lap_sec, quali_best_lap_sec,
+  deg_soft, deg_medium, deg_hard,
+  fuel_load_proxy,
+  weather_temp_c, weather_humidity, weather_precip_mm,
+  weather_wind_kmh, weather_pressure_hpa,
+  cv_traffic_index, cv_grip_index, cv_rain_index,
+  compound_bias,
+  target_race_pace, target_points
+
+B) Strategy output file
+- reports/strategy_recommendations_2025.csv
+- Current run shape: 24 rows x 30 columns
+- Key groups:
+  Primary strategy fields:
+  year, event_name, team, driver,
+  predicted_base_lap_sec,
+  best_strategy, compounds, pit_laps, stops,
+  start_compound, first_pit_lap,
+  strategy_plan,
+  expected_race_time, win_probability, strategy_score, robustness_window
+
+  Fallback #2 fields:
+  fallback_2_strategy, fallback_2_stops,
+  fallback_2_start_compound, fallback_2_pit_laps,
+  fallback_2_first_pit_lap, fallback_2_plan, fallback_2_trigger
+
+  Fallback #3 fields:
+  fallback_3_strategy, fallback_3_stops,
+  fallback_3_start_compound, fallback_3_pit_laps,
+  fallback_3_first_pit_lap, fallback_3_plan, fallback_3_trigger
+
+C) Summary and metrics
+- reports/model_metrics.json
+  Example current values:
+  mae=0.557321, rmse=0.634854, r2=0.255433
+- reports/run_summary.json
+  Includes training_rows, inference_rows, metrics, and output paths.
+
+D) Championship projection
+- reports/championship_projection_2025.json
+- Includes driver_title_probability and constructors_title_probability.
+- These are proxy probabilities derived from strategy metrics.
+
+============================================================
+9) Important status of your current run
+============================================================
+Current championship output indicates:
+- used_synthetic_training: true
+- used_synthetic_inference: true
+
+This means your currently deployed dashboard is using fallback synthetic data.
+For strict portfolio-grade output, run real-data lock mode.
+
+============================================================
+10) How the website works
+============================================================
+Backend/data source:
+- build_dashboard_payload(...) in src/f1_strategy_lab/dashboard/server.py
+- Data source priority:
+  1) explicit snapshot-dir
+  2) latest lock in reports/locks
+  3) reports fallback
+
+Payload includes:
+- source metadata
+- summary + kpis
+- strategy_rows
+- top_rounds
+- championship payload
+- manifest and round validation metadata (if available)
+
+Frontend behavior:
+- Single-page style routes using hash (#overview, #strategy)
+- Loads data from /api/data or /data/payload.json
+- Overview page: methodology storytelling blocks
+- Strategy page:
+  - Top Rounds by Win Probability panel
+  - Filters (search, stop count, min win probability)
+  - Sortable race strategy table
+  - Clickable row opening large detail drawer
+  - Full primary + fallback plans and triggers
+
+UX/motion system:
+- Loading screen with animated F1 silhouette
+- Hero silhouette glow that dims while scrolling
+- Reveal-on-scroll animations across sections
+- Smooth scroll to strategy table from CTA
+
+============================================================
+11) How to run and deploy
+============================================================
+Pipeline run:
+- python scripts/run_season_pipeline.py --config configs/mclaren_2025.yaml
+
+Strict real-data lock run:
+- python scripts/run_realdata_locked.py --config configs/mclaren_2025.yaml
+- optional API-load reduction:
+  --max-training-years 2
+
+Local dashboard:
+- python scripts/run_locked_dashboard.py --port 8765
+
+Static export:
+- python scripts/export_static_site.py --reports-dir reports --out-dir site
+
+Deploy:
+- vercel --prod
+
+Current alias:
+- https://do-not-f-up.vercel.app
+
+============================================================
+12) Interview explanation template
+============================================================
+Use this narrative:
+1) We predict event-level race pace using a supervised model trained on
+   historical event features (practice, qualifying, weather, optional CV).
+2) We then run Monte Carlo simulation over generated strategy candidates.
+3) We evaluate candidate resilience under multiple contingency scenarios.
+4) We output one primary strategy and two fallback strategies with triggers.
+5) We package results into an interactive dashboard and deploy on Vercel.
+6) We can run strict real-data locked snapshots for reproducibility with checksums.
+
+============================================================
+13) Limitations and next upgrades
+============================================================
+Known limitations:
+- FastF1 API quota can block full live-data ingestion.
+- Current simulator is heuristic, not fully calibrated by circuit-specific event priors.
+- CV features are lightweight proxies, not full detection/segmentation models.
+- Rival-team strategy reactions are not explicitly modeled.
+
+Recommended upgrades:
+- Add per-sector pace and overtaking probability model.
+- Add rival strategy game modeling for undercut/overcut interactions.
+- Add richer CV stack (detector + occupancy map + weather-state classifier).
+- Add calibration report comparing predicted vs actual strategy outcomes.
+
+End of document.

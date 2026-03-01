@@ -1,6 +1,6 @@
-# F1 Strategy Lab (2025 Season, McLaren Focus)
+# F1 Strategy Lab (2025 Season, Red Bull Focus)
 
-An end-to-end **computer vision + machine learning** project to generate race-day strategy recommendations for a top F1 team (default: **McLaren**) using:
+An end-to-end **computer vision + machine learning** project to generate race-day strategy recommendations for a top F1 team (default: **Red Bull Racing**) using:
 
 - Pre-season and historical performance context
 - Practice + qualifying pace features
@@ -8,6 +8,10 @@ An end-to-end **computer vision + machine learning** project to generate race-da
 - Weather signals by circuit and race window
 - CV-derived track-state/traffic metrics from session video
 - Monte Carlo strategy simulation with contingency planning
+
+Default runtime profile in this repo now targets the **ground-effect era**:
+- training years: `2022, 2023, 2024` (includes race-day targets)
+- inference year: `2025` (pre-season testing baseline + practice + qualifying features)
 
 This project is designed to be portfolio-grade for motorsport analytics roles.
 
@@ -44,13 +48,13 @@ pip install -e '.[dev]'
 Run the full pipeline:
 
 ```bash
-python scripts/run_season_pipeline.py --config configs/mclaren_2025.yaml
+python scripts/run_season_pipeline.py --config configs/redbull_2025.yaml
 ```
 
 Strict real-data run for 2025 with immutable snapshot lock:
 
 ```bash
-python scripts/run_realdata_locked.py --config configs/mclaren_2025.yaml
+python scripts/run_realdata_locked.py --config configs/redbull_2025.yaml
 ```
 
 This command:
@@ -61,14 +65,14 @@ This command:
 If FastF1 API quota is hit, run with fewer training years (still real data):
 
 ```bash
-python scripts/run_realdata_locked.py --config configs/mclaren_2025.yaml --max-training-years 2
+python scripts/run_realdata_locked.py --config configs/redbull_2025.yaml --max-training-years 2
 ```
 
 Run with optional video directory (`<event>.mp4` naming convention):
 
 ```bash
 python scripts/run_season_pipeline.py \
-  --config configs/mclaren_2025.yaml \
+  --config configs/redbull_2025.yaml \
   --videos-dir ./data/videos
 ```
 

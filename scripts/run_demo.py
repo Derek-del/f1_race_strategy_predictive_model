@@ -13,7 +13,7 @@ from f1_strategy_lab.pipeline import run_season_pipeline
 
 
 def main() -> None:
-    cfg = load_config("configs/mclaren_2025.yaml")
+    cfg = load_config("configs/redbull_2025.yaml")
     cfg.training_years = []
     cfg.target_year = 2025
     cfg.paths.reports_dir = "./reports/demo"

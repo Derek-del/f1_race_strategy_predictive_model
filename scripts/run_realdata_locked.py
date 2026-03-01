@@ -28,7 +28,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Run strict real-data 2025 pipeline and freeze outputs into a locked snapshot"
     )
-    parser.add_argument("--config", default="configs/mclaren_2025.yaml", help="Config YAML path")
+    parser.add_argument("--config", default="configs/redbull_2025.yaml", help="Config YAML path")
     parser.add_argument("--videos-dir", default=None, help="Optional practice/qualifying video directory")
     parser.add_argument(
         "--lock-root",

@@ -13,7 +13,7 @@ app = typer.Typer(help="F1 Strategy Lab command line")
 
 @app.command()
 def run(
-    config: str = typer.Option("configs/mclaren_2025.yaml", help="Path to YAML config"),
+    config: str = typer.Option("configs/redbull_2025.yaml", help="Path to YAML config"),
     videos_dir: str | None = typer.Option(None, help="Directory with event video files"),
     no_synthetic_fallback: bool = typer.Option(
         False, help="Disable synthetic fallback if live data is unavailable"
@@ -34,7 +34,7 @@ def run(
 
 @app.command()
 def demo() -> None:
-    cfg = load_config("configs/mclaren_2025.yaml")
+    cfg = load_config("configs/redbull_2025.yaml")
     cfg.training_years = []
     cfg.target_year = 2025
     cfg.paths.reports_dir = "./reports/demo"

@@ -15,7 +15,7 @@ from f1_strategy_lab.pipeline import run_season_pipeline
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Run 2025 F1 strategy pipeline")
-    parser.add_argument("--config", default="configs/mclaren_2025.yaml", help="Config YAML path")
+    parser.add_argument("--config", default="configs/redbull_2025.yaml", help="Config YAML path")
     parser.add_argument("--videos-dir", default=None, help="Optional directory of practice videos")
     parser.add_argument(
         "--no-synthetic-fallback",

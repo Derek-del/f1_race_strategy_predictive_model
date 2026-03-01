@@ -209,8 +209,10 @@ def _dashboard_html() -> str:
       --line-strong: rgba(255, 255, 255, 0.2);
       --ink: #f5f5f5;
       --muted: #a6a6a6;
-      --accent: #ff8a00;
-      --accent-soft: rgba(255, 138, 0, 0.24);
+      --accent: #2f6bff;
+      --accent-soft: rgba(47, 107, 255, 0.24);
+      --accent-red: #e11c38;
+      --accent-red-soft: rgba(225, 28, 56, 0.24);
       --good: #63d49a;
       --warn: #f4c16f;
       --bad: #f67480;
@@ -230,9 +232,10 @@ def _dashboard_html() -> str:
       font-family: "Sora", "Helvetica Neue", Helvetica, Arial, sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(90% 90% at 90% -10%, rgba(255, 138, 0, 0.2) 0%, transparent 52%),
+        radial-gradient(92% 92% at 88% -12%, rgba(47, 107, 255, 0.22) 0%, transparent 56%),
+        radial-gradient(80% 70% at -8% 2%, rgba(225, 28, 56, 0.18) 0%, transparent 48%),
         radial-gradient(80% 70% at -10% 0%, rgba(255, 255, 255, 0.05) 0%, transparent 42%),
-        linear-gradient(170deg, #020202 0%, #050505 60%, #020202 100%);
+        linear-gradient(170deg, #010205 0%, #04060f 60%, #020204 100%);
       min-height: 100vh;
       letter-spacing: 0.01em;
       -webkit-font-smoothing: antialiased;
@@ -260,8 +263,9 @@ def _dashboard_html() -> str:
       inset: 0;
       z-index: 100;
       background:
-        radial-gradient(90% 90% at 50% -10%, rgba(255, 138, 0,0.2) 0%, rgba(255, 138, 0,0) 55%),
-        linear-gradient(180deg, #050505 0%, #090909 100%);
+        radial-gradient(90% 90% at 50% -10%, rgba(47, 107, 255,0.24) 0%, rgba(47, 107, 255,0) 55%),
+        radial-gradient(80% 80% at 8% 10%, rgba(225, 28, 56,0.2) 0%, rgba(225, 28, 56,0) 52%),
+        linear-gradient(180deg, #040407 0%, #07080e 100%);
       display: grid;
       place-items: center;
       transition: opacity 520ms var(--ease), visibility 520ms var(--ease);
@@ -310,7 +314,7 @@ def _dashboard_html() -> str:
       width: 180px;
       height: 58px;
       animation: driveOff 1800ms var(--ease) forwards;
-      filter: drop-shadow(0 0 14px rgba(255, 138, 0,0.35));
+      filter: drop-shadow(0 0 14px rgba(47, 107, 255,0.35));
     }
 
     .loading-text {
@@ -346,7 +350,7 @@ def _dashboard_html() -> str:
       inset: 12% -12% 18% 34%;
       background: repeating-linear-gradient(
         96deg,
-        rgba(255, 164, 31, 0.22) 0 2px,
+        rgba(47, 107, 255, 0.24) 0 2px,
         transparent 2px 24px
       );
       opacity: 0;
@@ -361,8 +365,8 @@ def _dashboard_html() -> str:
       position: absolute;
       inset: 24% -8% 18% 14%;
       background:
-        radial-gradient(58% 44% at 46% 54%, rgba(255, 145, 20, 0.44) 0%, rgba(255, 145, 20, 0.14) 45%, rgba(255, 145, 20, 0) 100%),
-        radial-gradient(44% 30% at 84% 56%, rgba(255, 166, 45, 0.2) 0%, rgba(255, 166, 45, 0) 100%);
+        radial-gradient(58% 44% at 46% 54%, rgba(225, 28, 56, 0.44) 0%, rgba(225, 28, 56, 0.14) 45%, rgba(225, 28, 56, 0) 100%),
+        radial-gradient(44% 30% at 84% 56%, rgba(47, 107, 255, 0.2) 0%, rgba(47, 107, 255, 0) 100%);
       opacity: 0;
       z-index: 0;
       pointer-events: none;
@@ -376,7 +380,7 @@ def _dashboard_html() -> str:
       width: min(1460px, 108vw);
       opacity: calc((0.06 + (var(--hero-glow) * 0.9)) * var(--hero-fade));
       filter:
-        drop-shadow(0 0 calc(26px + (var(--hero-glow) * 90px)) rgba(255, 154, 24, calc(0.14 + (var(--hero-glow) * 0.56))))
+        drop-shadow(0 0 calc(26px + (var(--hero-glow) * 90px)) rgba(47, 107, 255, calc(0.14 + (var(--hero-glow) * 0.56))))
         drop-shadow(0 0 40px rgba(0, 0, 0, 0.6));
     }
 
@@ -397,8 +401,8 @@ def _dashboard_html() -> str:
       z-index: 1;
       opacity: 0;
       background:
-        linear-gradient(96deg, rgba(255, 179, 74, 0.5) 0%, rgba(255, 179, 74, 0) 36%),
-        repeating-linear-gradient(96deg, rgba(255, 154, 24, 0.14) 0 2px, transparent 2px 18px);
+        linear-gradient(96deg, rgba(225, 28, 56, 0.5) 0%, rgba(225, 28, 56, 0) 36%),
+        repeating-linear-gradient(96deg, rgba(47, 107, 255, 0.14) 0 2px, transparent 2px 18px);
       mix-blend-mode: screen;
       transform: translateX(0);
     }
@@ -483,7 +487,7 @@ def _dashboard_html() -> str:
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, transparent 20%, rgba(255, 138, 0, 0.08) 50%, transparent 80%);
+      background: linear-gradient(120deg, transparent 20%, rgba(47, 107, 255, 0.08) 50%, transparent 80%);
       transform: translateX(-50%);
       animation: sweep 5.8s ease-in-out infinite;
       pointer-events: none;
@@ -541,7 +545,7 @@ def _dashboard_html() -> str:
     .hero-note {
       margin: 0;
       font-size: clamp(20px, 2.4vw, 34px);
-      color: #ffd8a3;
+      color: #d9e5ff;
       max-width: 980px;
       text-align: left;
       letter-spacing: -0.01em;
@@ -597,14 +601,14 @@ def _dashboard_html() -> str:
     }
 
     .btn.primary {
-      border-color: rgba(255, 138, 0, 0.55);
-      background: linear-gradient(120deg, rgba(255, 138, 0, 0.24), rgba(255, 138, 0, 0.06));
-      color: #fff3e4;
+      border-color: rgba(47, 107, 255, 0.55);
+      background: linear-gradient(120deg, rgba(47, 107, 255, 0.24), rgba(47, 107, 255, 0.06));
+      color: #eef3ff;
     }
 
     .btn.warn {
       border-color: rgba(244, 193, 111, 0.4);
-      color: #f7d8a2;
+      color: #c8d8ff;
     }
 
     .ripple {
@@ -655,7 +659,7 @@ def _dashboard_html() -> str:
       right: 12px;
       bottom: 4px;
       height: 1px;
-      background: rgba(255, 138, 0,0.75);
+      background: rgba(47, 107, 255,0.75);
       transform: scaleX(0);
       transform-origin: left;
       transition: transform 240ms var(--ease);
@@ -667,9 +671,9 @@ def _dashboard_html() -> str:
     }
 
     .tab.active {
-      border-color: rgba(255, 138, 0, 0.45);
-      background: rgba(255, 138, 0, 0.16);
-      color: #fff3df;
+      border-color: rgba(47, 107, 255, 0.45);
+      background: rgba(47, 107, 255, 0.16);
+      color: #edf2ff;
     }
 
     .tab.active::after {
@@ -862,7 +866,7 @@ def _dashboard_html() -> str:
 
     .pop-item {
       border: 0;
-      border-left: 2px solid rgba(255, 138, 0, 0.34);
+      border-left: 2px solid rgba(47, 107, 255, 0.34);
       border-radius: 0;
       background: transparent;
       padding: 14px 0 14px 16px;
@@ -877,7 +881,7 @@ def _dashboard_html() -> str:
 
     .pop-item:hover {
       transform: translateX(6px);
-      border-color: rgba(255, 138, 0, 0.64);
+      border-color: rgba(47, 107, 255, 0.64);
     }
 
     .pop-item h4 {
@@ -885,7 +889,7 @@ def _dashboard_html() -> str:
       font-size: 14px;
       text-transform: uppercase;
       letter-spacing: 0.11em;
-      color: #ffd08a;
+      color: #c7d8ff;
       font-family: var(--mono);
     }
 
@@ -904,7 +908,7 @@ def _dashboard_html() -> str:
 
     .story-card {
       border: 0;
-      border-left: 2px solid rgba(255, 138, 0, 0.3);
+      border-left: 2px solid rgba(47, 107, 255, 0.3);
       border-radius: 0;
       background: transparent;
       padding: 14px 0 14px 16px;
@@ -915,7 +919,7 @@ def _dashboard_html() -> str:
 
     .story-card:hover {
       transform: translateX(6px);
-      border-color: rgba(255, 138, 0, 0.6);
+      border-color: rgba(47, 107, 255, 0.6);
     }
 
     .story-card:nth-child(1) { --delay: 140ms; }
@@ -927,7 +931,7 @@ def _dashboard_html() -> str:
       font-size: 14px;
       letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: #ffcc8d;
+      color: #c2d5ff;
     }
 
     .story-card p {
@@ -958,7 +962,7 @@ def _dashboard_html() -> str:
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(120deg, transparent 30%, rgba(255, 138, 0,0.06) 50%, transparent 70%);
+      background: linear-gradient(120deg, transparent 30%, rgba(47, 107, 255,0.06) 50%, transparent 70%);
       transform: translateX(-80%);
       animation: sheenPanel 9s ease-in-out infinite;
       pointer-events: none;
@@ -1004,9 +1008,9 @@ def _dashboard_html() -> str:
       width: 0%;
       height: 100%;
       border-radius: 999px;
-      background: linear-gradient(90deg, #c26a00 0%, #ff8a00 100%);
+      background: linear-gradient(90deg, #c81137 0%, #2f6bff 100%);
       transition: width 860ms var(--ease);
-      box-shadow: 0 0 12px rgba(255, 138, 0,0.35);
+      box-shadow: 0 0 12px rgba(47, 107, 255,0.35);
     }
 
     .spark {
@@ -1058,8 +1062,8 @@ def _dashboard_html() -> str:
     }
 
     input[type='search']:focus, select:focus {
-      border-color: rgba(255, 138, 0,0.6);
-      box-shadow: 0 0 0 3px rgba(255, 138, 0,0.2);
+      border-color: rgba(47, 107, 255,0.6);
+      box-shadow: 0 0 0 3px rgba(47, 107, 255,0.2);
     }
 
     .table-wrap {
@@ -1122,8 +1126,8 @@ def _dashboard_html() -> str:
     }
 
     tbody tr.reveal { animation: rise 360ms var(--delay, 0ms) var(--ease) forwards; }
-    tbody tr:hover { background: rgba(255, 138, 0,0.08); }
-    tbody tr:active { background: rgba(255, 138, 0,0.14); }
+    tbody tr:hover { background: rgba(47, 107, 255,0.08); }
+    tbody tr:active { background: rgba(47, 107, 255,0.14); }
 
     .race-main {
       display: block;
@@ -1611,8 +1615,8 @@ def _dashboard_html() -> str:
     <div class="motion-layer"></div>
     <img
       class="car-photo"
-      src="https://p.turbosquid.com/ts-thumb/Dr/06s7Jw/8G/mcl39_0000/jpg/1741934846/1920x1080/fit_q87/fca87e4f2ec80d23c7eb802adccfb4546ee348b4/mcl39_0000.jpg"
-      alt="McLaren MCL39 Formula 1 car render"
+      src="https://upload.wikimedia.org/wikipedia/commons/b/b0/2023_Red_Bull_RB19.jpg"
+      alt="Red Bull RB19 Formula 1 car"
     />
   </div>
 
@@ -1625,7 +1629,7 @@ def _dashboard_html() -> str:
             <p class="brand-sub">do not f**kup</p>
           </div>
           <h1 class="title">A Race strategy prediction model</h1>
-          <p class="hero-note">Strategy prediction model for McLaren F1 for the 2025 Formula 1 season</p>
+          <p class="hero-note">Strategy prediction model for Red Bull Racing for the 2025 Formula 1 season</p>
           <p class="sub" id="metaLine">Loading race strategies...</p>
         </div>
       </div>
